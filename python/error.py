@@ -1,9 +1,9 @@
 #-------------------------------------------------------------------------------
-# File Name :
-# Purpose   :
-# Author    :
-# Created   :
-# Copyright :
+# File Name : error.py
+# Purpose   : Contains all the error strings used in the dashboard backend 
+# Author    : S.M.N.Balasubramanian
+# Created   : 24 Nov 2016
+# Copyright : TBD
 #-------------------------------------------------------------------------------
 
 class error():

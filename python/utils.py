@@ -1,9 +1,9 @@
 #-------------------------------------------------------------------------------
-# File Name :
-# Purpose   :
-# Author    :
-# Created   :
-# Copyright :
+# File Name : utils.py
+# Purpose   : Utility classes for the dashboard backend
+# Author    : S.M.N.Balasubramanian
+# Created   : 24 Nov 2016
+# Copyright : TBD
 #-------------------------------------------------------------------------------
 
 import sys, os

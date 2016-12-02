@@ -1,9 +1,9 @@
 #-------------------------------------------------------------------------------
-# File Name :
-# Purpose   :
-# Author    :
-# Created   :
-# Copyright :
+# File Name : launcher.py
+# Purpose   : Launcher script for the dashboard backend
+# Author    : S.M.N.Balasubramanian
+# Created   : 26 Nov 2016
+# Copyright : TBD
 #-------------------------------------------------------------------------------
 
 
