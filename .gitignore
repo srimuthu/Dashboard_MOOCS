@@ -1,0 +1,12 @@
+# Ignore these files
+
+# Folders
+/data/*
+
+# Python pycache
+/python/*.pyc
+
+# R stuff
+/dashboard/.Rproj.user
+/dashboard/.Rhistory
+/dashboard/.RData

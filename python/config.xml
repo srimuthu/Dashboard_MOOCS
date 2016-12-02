@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<settings>
+	
+	<courses>
+		<slug>real-time-systems</slug>
+		<slug>iot-architecture</slug>
+		<slug>quantitative-formal-modeling-1</slug>
+	</courses>
+
+	<datapath>/home/smnbalasubramanian/MOOCS_Dev/Dashboard_MOOCS/data</datapath>
+
+</settings>
