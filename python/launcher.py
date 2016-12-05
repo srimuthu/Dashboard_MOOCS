@@ -50,6 +50,9 @@ if __name__=='__main__':
 		postgres_database_name = courseSlug.replace("-",'')
 		convert_ondemand.convert_ondemand_main(path_to_files, postgres_database_name)
 		
+	#Create course list json for use in shiny dashboard
+	parserObj.create_course_list_json()
+
 
 	#Delete Utils objects
 	del(parserObj)

@@ -10,7 +10,7 @@ library(shinydashboard)
 
 # Load json with postgresql defaults
 postgres_defaults <- RJSONIO::fromJSON(content = "settings/postgres_defaults.json")
-
+course_list <- RJSONIO::fromJSON(content = "settings/course_list.json")
 
 # Header -----
 
@@ -24,9 +24,7 @@ sidebar <-   dashboardSidebar(
   sidebarMenu(
     menuItem("Dashboard", tabName = "dashboard"),
     selectInput("selectCourse", label = h3("Select Course"), 
-                choices = list("Arch Smart IOT Devices" = "iotarchitecture", 
-                               "Quantitative formal modeling 1" = "quantitativeformalmodeling1",
-                               "RTS"= "realtimesystems"), 
+                choices = course_list, 
                 selected = 1),
     menuItem("Settings", tabName = "settings"),
     menuItem("Contact", href = "mailto:s.m.n.balasubramanian@student.tue.nl", icon = icon("envelope"))

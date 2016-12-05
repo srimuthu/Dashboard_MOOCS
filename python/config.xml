@@ -9,4 +9,6 @@
 
 	<datapath>/home/smnbalasubramanian/MOOCS_Dev/Dashboard_MOOCS/data</datapath>
 
+	<jsonpath>/home/smnbalasubramanian/MOOCS_Dev/Dashboard_MOOCS/dashboard/settings</jsonpath>
+
 </settings>

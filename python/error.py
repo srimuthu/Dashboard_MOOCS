@@ -13,4 +13,6 @@ class error():
 
 	ConfigFileNotFoundError = "Config XML file not found!"
 	NoDownloadPathError = "Download path does not exist!"
+	configNotParsedError = "Call parse_config_xml before creating json"
+	dashboardPathError = "Path specified in the config xml file for the dashboard location does not exist!!"
 
