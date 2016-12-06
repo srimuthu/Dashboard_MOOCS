@@ -22,6 +22,7 @@ header <- dashboardHeader(
 
 sidebar <-   dashboardSidebar(
   sidebarMenu(
+    menuItem("EIT-Overview", tabName = "eitOverview"),
     menuItem("Dashboard", tabName = "dashboard"),
     selectInput("selectCourse", label = h3("Select Course"), 
                 choices = course_list, 
@@ -35,6 +36,17 @@ sidebar <-   dashboardSidebar(
 
 body <- dashboardBody(
   tabItems(
+    #EIT Overview
+    tabItem(tabName = "eitOverview",
+            titlePanel("EIT-Overview"),
+            fluidRow(
+              valueBoxOutput("enrolledOverview"),
+              valueBoxOutput("activeStud2Weeks"),
+              valueBoxOutput("viewersOverview"),
+              valueBoxOutput("completersOverview"),
+              valueBoxOutput("paymentUsersOverview")
+            )
+            ),
     #Dashboard
     tabItem(tabName = "dashboard",
             titlePanel("Dashboard"),

@@ -41,6 +41,35 @@ function(input, output) {
     setts <- RJSONIO::toJSON(postgres_defaults, pretty = T)
     write(setts, paste0(getwd(), "/postgres_defaults.json"))
   })
+  #-------------------------------------TEST------------------------------------------
+  # GET COMPLETION DATA OVERVIEW-----
+  
+  compDataOverview <- reactive({
+    
+    for (course in course_list){
+      con <- psql(psql_host(), psql_port(), psql_user(), psql_pwd(), course)
+      # Get data
+      compDataOverview <- passingGr(con)
+      # Disconnect
+      t <- dbDisconnect(con)  
+    }
+    
+    # Return
+    return(compDataOverview)
+    
+  })  
+  # Create value box (average grade)
+  output$completersOverview <- renderValueBox({
+    # Data
+    t <- compDataOverview()$course_grade_overall %>%
+      filter(., course_passing_state_id != 0)
+    # Value box
+    valueBox(
+      format(round(mean(t$course_grade_overall), digits = 2),format="d",big.mark=","),
+      "Average Grade (of completers)", icon = icon("area-chart"), color = "yellow")
+  })
+  #-------------------------------------END TEST------------------------------------------
+  
   
   # Dates on which users join ----
 
