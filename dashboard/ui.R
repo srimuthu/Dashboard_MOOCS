@@ -1,8 +1,9 @@
 
-# This is the user-interface definition of a Shiny web application.
-# You can find out more about building applications with Shiny here:
 #
-# http://shiny.rstudio.com
+# User Interface for Coursera data dashboard.
+# Project by Leiden University (Jasper Ginn) & EIT digital (S.M.N.Balasubramanian)
+#
+# Development version
 #
 
 library(shiny)
