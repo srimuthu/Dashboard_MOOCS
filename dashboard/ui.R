@@ -16,7 +16,7 @@ course_list <- jsonlite::fromJSON(content = "settings/course_list.json")
 # Header -----
 
 header <- dashboardHeader(
-  title = "EIT Digital Dashboard"
+  title = "MOOC Dashboard" # Let's give this a generic name for now
 )
 
 # Sidebar ----
