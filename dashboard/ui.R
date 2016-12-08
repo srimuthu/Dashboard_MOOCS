@@ -10,8 +10,8 @@ library(shiny)
 library(shinydashboard)
 
 # Load json with postgresql defaults
-postgres_defaults <- jsonlite::fromJSON(content = "settings/postgres_defaults.json")
-course_list <- jsonlite::fromJSON(content = "settings/course_list.json")
+postgres_defaults <- jsonlite::fromJSON("settings/postgres_defaults.json")
+course_list <- jsonlite::fromJSON("settings/course_list.json")
 
 # Header -----
 
@@ -25,7 +25,7 @@ header <- dashboardHeader(
 
 sidebar <-   dashboardSidebar(
   sidebarMenu(
-    menuItem("EIT-Overview", tabName = "eitOverview"),
+    menuItem("EIT-Overview", tabName = "eitOverview"), # Can we give this a generic name too?
     menuItem("Dashboard", tabName = "dashboard"),
     selectInput("selectCourse", label = h3("Select Course"), 
                 choices = course_list, 
@@ -91,17 +91,26 @@ body <- dashboardBody(
               )
             )
             ),
+    # Settings
     tabItem(tabName = "settings",
-            h3("PostgreSQL settings"),
-            textInput(inputId = "psqlhostname", label = "Hostname", value = postgres_defaults$hostname),
-            textInput(inputId = "psqlport", label = "Port", value = postgres_defaults$port),
-            textInput(inputId = "psqlusername", label = "User", value = postgres_defaults$user),
-            textInput(inputId = "psqlpassword", label = "Password", value = postgres_defaults$password),
-            #textInput(inputId = "psqldatabase", label = "Database", value = postgres_defaults$database),
-            p("Click to save as default"),
-            actionButton("saveSettingsButton", "Save")
+            fluidRow(
+              column(
+                width = 4,
+                box(
+                  width = NULL,
+                  h3("PostgreSQL settings"),
+                  textInput(inputId = "psqlhostname", label = "Hostname", value = postgres_defaults$hostname),
+                  textInput(inputId = "psqlport", label = "Port", value = postgres_defaults$port),
+                  textInput(inputId = "psqlusername", label = "User", value = postgres_defaults$user),
+                  textInput(inputId = "psqlpassword", label = "Password", value = postgres_defaults$password),
+                  #textInput(inputId = "psqldatabase", label = "Database", value = postgres_defaults$database),
+                  p("Click to save as default"),
+                  actionButton("saveSettingsButton", "Save")
+                )
+              )
             )
-  )
+      )
+    )
 )
 
 # Pull it together ---- 
