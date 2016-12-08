@@ -9,8 +9,8 @@ library(shiny)
 library(shinydashboard)
 
 # Load json with postgresql defaults
-postgres_defaults <- RJSONIO::fromJSON(content = "settings/postgres_defaults.json")
-course_list <- RJSONIO::fromJSON(content = "settings/course_list.json")
+postgres_defaults <- jsonlite::fromJSON(content = "settings/postgres_defaults.json")
+course_list <- jsonlite::fromJSON(content = "settings/course_list.json")
 
 # Header -----
 
@@ -19,6 +19,8 @@ header <- dashboardHeader(
 )
 
 # Sidebar ----
+
+# TODO: Settings below (mailto etc) should be customizable in a file maybe
 
 sidebar <-   dashboardSidebar(
   sidebarMenu(
