@@ -93,9 +93,12 @@ body <- dashboardBody(
             ),
     # Settings
     tabItem(tabName = "settings",
+            # Fluidrow is bootstrap allocation of space (essentially 12 columns)
             fluidRow(
+              # Here, we allocate a column of width 4 
               column(
                 width = 4,
+                # And in that we put the box
                 box(
                   width = NULL,
                   h3("PostgreSQL settings"),
@@ -106,6 +109,24 @@ body <- dashboardBody(
                   #textInput(inputId = "psqldatabase", label = "Database", value = postgres_defaults$database),
                   p("Click to save as default"),
                   actionButton("saveSettingsButton", "Save")
+                )
+              ),
+              # This column is for course settings
+              column(
+                width=4,
+                box(
+                  width = NULL,
+                  h3("Course names"),
+                  textAreaInput(inputId = "courses", 
+                                label = "List of courses",
+                                value = paste0(
+                                    names(course_list), " = ", unlist(unname(course_list)),
+                                    collapse = ",\n"
+                                ),
+                                rows = ifelse(length(course_list) <= 10, length(course_list), 10)
+                              ),
+                  p("Click to save as default"),
+                  actionButton("saveCoursesButton", "Save")
                 )
               )
             )
