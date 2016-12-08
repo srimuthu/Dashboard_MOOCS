@@ -12,6 +12,11 @@ library(googleVis)
 function(input, output) {
   #Import helper script
   source(paste0(getwd(),"/functions/helpers.R"))
+  
+  # ---------------------------------------
+  # USER SETTINGS
+  # ---------------------------------------
+  
   #postgresql setup
   psql_host <- reactive({
     input$psqlhostname
@@ -28,6 +33,7 @@ function(input, output) {
   psql_port <- reactive({
     input$psqlport
   })
+  
   # Listen for click to save settings as default
   observeEvent(input$saveSettingsButton, {
     postgres_defaults <- list()
@@ -38,9 +44,33 @@ function(input, output) {
     postgres_defaults$password <- psql_pwd()
     postgres_defaults$database <- psql_db()
     # Save
-    setts <- RJSONIO::toJSON(postgres_defaults, pretty = T)
+    setts <- jsonlite::toJSON(postgres_defaults, pretty = TRUE)
     write(setts, paste0(getwd(), "/postgres_defaults.json"))
   })
+  
+  # Listen for click to save courses settings as default
+  observeEvent(input$saveCoursesButton, {
+    courses_defaults <- list()
+    # Set defaults
+    v <- input$courses
+    # Split at ', \n'
+    vsplit1 <- strsplit(v, ",\n")[[1]]
+    # Split at '='
+    vsplit2 <- strsplit(vsplit1, " = ")
+    # To list & JSON
+    names.courses <- c()
+    for(co in 1:length(vsplit2)) {
+      names.courses <- c(names.courses, vsplit2[[co]][1])
+      # Remove from vsplit2
+      vsplit2[[co]] <- vsplit2[[co]][-1]
+    }
+    # Add names
+    names(vsplit2) <- names.courses
+    # To json
+    courses <- jsonlite::toJSON(vsplit2, pretty = TRUE)
+    write(courses, "settings/course_list.json")
+  })
+  
   #-------------------------------------TEST------------------------------------------
   # GET COMPLETION DATA OVERVIEW-----
   
