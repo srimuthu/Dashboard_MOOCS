@@ -27,17 +27,23 @@ sidebar <-   dashboardSidebar(
   sidebarMenu(
     menuItem("EIT-Overview", tabName = "eitOverview"), # Can we give this a generic name too?
     menuItem("Dashboard", tabName = "dashboard"),
+    menuItem("Settings", tabName = "settings"),
+    menuItem("Contact", href = "mailto:s.m.n.balasubramanian@student.tue.nl", icon = icon("envelope")),
     selectInput("selectCourse", label = h3("Select Course"), 
                 choices = course_list, 
-                selected = 1),
-    menuItem("Settings", tabName = "settings"),
-    menuItem("Contact", href = "mailto:s.m.n.balasubramanian@student.tue.nl", icon = icon("envelope"))
+                selected = 1)
   )
 )
 
 # Body -----
 
 body <- dashboardBody(
+  
+  # Use custom CSS
+  tags$head(
+    tags$link(rel = "stylesheet", type = "text/css", href = "custom.css")
+  ),
+  
   tabItems(
     #EIT Overview
     tabItem(tabName = "eitOverview",
