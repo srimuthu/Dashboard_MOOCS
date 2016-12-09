@@ -77,14 +77,14 @@
     margin-bottom: 20px;
   }
 .btn-default {
-  background-color: #3c8dbc;
-    border-color: #367fa9;
+  background-color: #d4d4d4;
+    border-color: #8c8c8c;
     margin-left: 10px;
   margin-top: 20px;
   margin-bottom: 20px;
 }
 .btn-default.hover, .btn-default:active, .btn-default:hover {
-  background-color: #367fa9;
+  background-color: #8c8c8c;
 }
 .btn-default:hover {
   border-color: #204d74;
@@ -128,4 +128,18 @@
 }
 .sidebar-collapse .main-header .logo {
   transform: translate(-200px,0);
+}
+
+/* learner map */
+.leaflet {
+  height: 100%; 
+  width: 100%;
+}
+
+#leafletMapCountryOfOrigin {
+  height = calc(100vh - 80px) !important;
+}
+
+.leaflet-container {
+  background-color: #ecf0f5 !important;
 }

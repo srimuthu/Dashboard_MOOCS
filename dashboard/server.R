@@ -7,11 +7,13 @@
 
 library(shiny)
 library(shinydashboard)
-library(googleVis)
+library(leaflet)
+library(dplyr)
+library(ggplot2)
+library(plotly)
 
-function(input, output) {
-  #Import helper script
-  source(paste0(getwd(),"/functions/helpers.R"))
+# Shiny server
+function(input, output, session) {
   
   # ---------------------------------------
   # USER SETTINGS
@@ -53,7 +55,7 @@ function(input, output) {
     courses_defaults <- list()
     # Set defaults
     v <- input$courses
-    # Split at ', \n'
+    # Split at ", \n"
     vsplit1 <- strsplit(v, ",\n")[[1]]
     # Split at '='
     vsplit2 <- strsplit(vsplit1, " = ")
@@ -71,152 +73,147 @@ function(input, output) {
     write(courses, "settings/course_list.json")
   })
   
-  #-------------------------------------TEST------------------------------------------
-  # GET COMPLETION DATA OVERVIEW-----
-  
-  compDataOverview <- reactive({
-    
-    for (course in course_list){
-      con <- psql(psql_host(), psql_port(), psql_user(), psql_pwd(), course)
-      # Get data
-      compDataOverview <- passingGr(con)
-      # Disconnect
-      t <- dbDisconnect(con)  
-    }
-    
-    # Return
-    return(compDataOverview)
-    
-  })  
-  # Create value box (average grade)
-  output$completersOverview <- renderValueBox({
-    # Data
-    t <- compDataOverview()$course_grade_overall %>%
-      filter(., course_passing_state_id != 0)
-    # Value box
-    valueBox(
-      format(round(mean(t$course_grade_overall), digits = 2),format="d",big.mark=","),
-      "Average Grade (of completers)", icon = icon("area-chart"), color = "yellow")
+  # Get date range
+  dates <- reactive({
+    input$daterange
   })
-  #-------------------------------------END TEST------------------------------------------
-  
-  
-  # Dates on which users join ----
 
-  usrJoin <- reactive({
+  # ---------------------------------------
+  # TAB DASHBOARD OUTPUT
+  # ---------------------------------------  
+  
+  # New enrollers
+  output$valueBoxTotalStudents <- renderValueBox({
+    d<-dates()
+    # Connect to postgres
     con <- psql(psql_host(), psql_port(), psql_user(), psql_pwd(), psql_db())
-    # Get user join
-    uJD <- userJoinData(con) # This function can be found in 'helpers.R'
-    # Disconnect
-    t <- dbDisconnect(con)
-    return(uJD)
-  })
-
-  # Plot
-  output$joinLine <- renderGvis({
-    # data
-    t <- usrJoin()
-    names(t) <- c("date", "count")
-    # Return chart
-    gvisLineChart(t#,
-                  #options=list(legend = "none",
-                  #            series="[{targetAxisIndex: 0},
-                  #           {targetAxisIndex:1}]",
-                  #          vAxes="[{title:'Number of participants'}, {title:'Date'}]"
-                  #)
+    # calculate total students
+    TS <- newEnrollers(con, from = d[1], to = d[2])
+    # Valuebox
+    valueBox(
+      TS, "New enrollers", icon = icon("users"), color = "purple"
     )
   })
-
-  # GET COMPLETION DATA -----
-
-  compData <- reactive({
+  
+  # Active
+  output$valueBoxActiveStudents <- renderValueBox({
+    d<-dates()
+    # Connect to postgres
     con <- psql(psql_host(), psql_port(), psql_user(), psql_pwd(), psql_db())
-    # Get data
-    compData <- passingGr(con)
-    # Disconnect
-    t <- dbDisconnect(con)
-    # Return
-    return(compData)
-  })
-
-  # Visuals completion data
-
-  # Create value box (completion rate)
-  output$compRate <- renderValueBox({
-    # Data
-    t <- compData()$passing_data
-    # Numb
-    y <- t[t$course_passing_state_id != "Others",]
-    # Num
-    tnum <- round((sum(y$count) / compData()$total_users$count) * 100, digits=2)
-    # Value box
+    # calculate total students
+    TS <- activeStudents(con, from = d[1], to = d[2])
+    # Valuebox
     valueBox(
-      format(paste0(tnum,"%"),format="d",big.mark=","),
-      "Overall Completion Rate", icon = icon("area-chart"), color = "green")
-  })
-  # Create value box (average grade)
-  output$avgGr <- renderValueBox({
-    # Data
-    t <- compData()$course_grade_overall %>%
-      filter(., course_passing_state_id != 0)
-    # Value box
-    valueBox(
-      format(round(mean(t$course_grade_overall), digits = 2),format="d",big.mark=","),
-      "Average Grade (of completers)", icon = icon("area-chart"), color = "yellow")
-  })
-  # Create value box (completed this month)
-  output$compTM <- renderValueBox({
-    thisMonth <- format(Sys.Date(), "%B")
-    thisYear <- format(Sys.Date(), "%Y")
-    # Data
-    t <- compData()$completed_time %>%
-      mutate(., month = format(ts_conv, "%B")) %>%
-      mutate(., year = format(ts_conv, "%Y")) %>%
-      filter(., month == thisMonth & year == thisYear)
-    # Value box
-    valueBox(
-      format(nrow(t),format="d",big.mark=","),
-      paste0("# Completers in ",thisMonth, " ", thisYear),
-      icon = icon("area-chart"), color = "orange")
-  })
-  # Pie chart (completers)
-  output$barChartComp <- renderGvis({
-    t <- compData()$passing_data
-    # Plot
-    gvisPieChart(t,
-                 options = list(title="Overview of Completion Rates")
+      TS, "Active students", icon = icon("bolt"), color = "purple"
     )
   })
-  # Histogram of Grade Distribution
-  output$histGrades <- renderGvis({
-    t <- compData()$course_grade_overall %>%
-      filter(., course_passing_state_id != 0) %>%
-      select(., course_grade_overall)
-    # Plot
-    gvisHistogram(t,
-                  options = list(legend = "none",
-                                 title="Distribution of Course Grades (for completers)")
+  
+  # Browsers
+  output$valueBoxBrowsingStudents <- renderValueBox({
+    d<-dates()
+    # Connect to postgres
+    con <- psql(psql_host(), psql_port(), psql_user(), psql_pwd(), psql_db())
+    # calculate total students
+    TS <- viewingStudents(con, from = d[1], to = d[2])
+    # Valuebox
+    valueBox(
+      TS, "Browsing students", icon = icon("mobile"), color = "purple"
     )
   })
-  # Graph of when completed
-  output$completersPM <- renderGvis({
-    t <- compData()$completed_time %>%
-      filter(., course_passing_state_id != 0) %>%
-      mutate(., month = format(as.Date(ts_conv), "%B"),
-             month_num = format(as.Date(ts_conv), "%m"),
-             year = format(as.Date(ts_conv), "%Y")) %>%
-      group_by(., month_num, month, year) %>%
-      summarize(., count = n()) %>%
-      ungroup(.) %>%
-      mutate(., month_num = as.numeric(month_num)) %>%
-      mutate(., monthyear = paste0(month, " ", year)) %>%
-      arrange(., year, month_num) %>%
-      select(., monthyear, count)
-    # Plot
-    gvisColumnChart(t, "monthyear", "count",
-                    options = list(legend = "none",
-                                   title="Number of Completers, by Month"))
-
+  
+  # Course completers
+  output$valueBoxCourseCompleters <- renderValueBox({
+    d<-dates()
+    # Connect to postgres
+    con <- psql(psql_host(), psql_port(), psql_user(), psql_pwd(), psql_db())
+    # calculate total students
+    TS <- courseCompleters(con, from = d[1], to = d[2])
+    # Valuebox
+    valueBox(
+      TS, "Course completers", icon = icon("graduation-cap"), color = "blue"
+    )
+  })
+  
+  # Number payments
+  output$valueBoxPayments <- renderValueBox({
+    d<-dates()
+    # Connect to postgres
+    con <- psql(psql_host(), psql_port(), psql_user(), psql_pwd(), psql_db())
+    # calculate total students
+    TS <- numberPayments(con, from = d[1], to = d[2])
+    # Valuebox
+    valueBox(
+      TS, "Payments", icon = icon("credit-card"), color = "blue"
+    )
+  })
+  
+  # Number financial aid
+  output$valueBoxFinancialAid <- renderValueBox({
+    d<-dates()
+    # Connect to postgres
+    con <- psql(psql_host(), psql_port(), psql_user(), psql_pwd(), psql_db())
+    # calculate total students
+    TS <- numberFinancialAid(con, from = d[1], to = d[2])
+    # Valuebox
+    valueBox(
+      TS, "Students receiving financial aid", icon = icon("medkit"), color = "blue"
+    )
+  })
+  
+  # Users over time
+  output$chartUsersOverTime <- renderPlotly({
+    # Fetch data for last 90 days
+    io <- usersOverTime(con)
+    # Create an area chart
+    a <- ggplot(io, aes(x=date, y=Enrollers)) +
+      geom_area(fill = "red", alpha = 0.6) +
+      geom_line(aes(x=date, y=SMA), color = "#808080", size = 1) +
+      theme_cfi_scientific() +
+      scale_x_date(name = "") +
+      scale_y_continuous(name = "Number of enrollers")
+    # Push through plotly to make interactive
+    ggplotly(a)
+  })
+  
+  # ---------------------------------------
+  # TAB GEOGRAPHY OUTPUT
+  # ---------------------------------------  
+  
+  # Map with number of users
+  output$leafletMapCountryOfOrigin <- renderLeaflet({
+    d<-dates()
+    # Connect to postgres
+    con <- psql(psql_host(), psql_port(), psql_user(), psql_pwd(), psql_db())
+    # Dataframe with countries of origin
+    io <- countryOfOrigin(con, from = d[1], to = d[2])
+    # Validate that length of io > 0
+    validate(
+      need(nrow(io) != 0, "There are no learners who joined in this period.")
+    )
+    # Join to map data
+    countries@data <- countries@data %>%
+      # Join with coursera data
+      left_join(io, by="iso3c") %>%
+      # Replace NA values
+      mutate(n=ifelse(is.na(n), 0, n))
+    # Create color palette
+    pal <- colorQuantile(RColorBrewer::brewer.pal(5, "Blues"), countries@data$n)
+    # Create popup based on values
+    popup <- paste0(
+      "<strong>", countries@data$country, ": </strong>", countries@data$n, " learners (", 
+      round((countries@data$n / sum(countries@data$n)) * 100,digits=2), "%)"
+    )
+    # Create leaflet map
+    leaflet(data = countries) %>%
+      # Add polygons
+      addPolygons(fillColor = ~pal(n), 
+                  fillOpacity = 1, 
+                  color = "#505051",
+                  popup = popup,
+                  weight = 2.5) %>%
+      # Set view on europe
+      setView(lng = -27.5097656, lat = 29.0801758, zoom = 1)
+    
   })
   
 }

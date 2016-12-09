@@ -8,6 +8,7 @@
 
 library(shiny)
 library(shinydashboard)
+library(leaflet)
 
 # Load json with postgresql defaults
 postgres_defaults <- jsonlite::fromJSON("settings/postgres_defaults.json")
@@ -27,11 +28,14 @@ sidebar <-   dashboardSidebar(
   sidebarMenu(
     menuItem("EIT-Overview", tabName = "eitOverview"), # Can we give this a generic name too?
     menuItem("Dashboard", tabName = "dashboard"),
+    menuItem("Geography", tabName = "geography"),
     menuItem("Settings", tabName = "settings"),
     menuItem("Contact", href = "mailto:s.m.n.balasubramanian@student.tue.nl", icon = icon("envelope")),
     selectInput("selectCourse", label = h3("Select Course"), 
                 choices = course_list, 
-                selected = 1)
+                selected = 1),
+    dateRangeInput("daterange", label = h3("Select Date Range"), start = Sys.Date() - 14,
+                   end = Sys.Date())
   )
 )
 
@@ -46,56 +50,27 @@ body <- dashboardBody(
   
   tabItems(
     #EIT Overview
-    tabItem(tabName = "eitOverview",
-            titlePanel("EIT-Overview"),
-            fluidRow(
-              valueBoxOutput("enrolledOverview"),
-              valueBoxOutput("activeStud2Weeks"),
-              valueBoxOutput("viewersOverview"),
-              valueBoxOutput("completersOverview"),
-              valueBoxOutput("paymentUsersOverview")
-            )
+    tabItem(tabName = "eitOverview"
             ),
     #Dashboard
     tabItem(tabName = "dashboard",
-            titlePanel("Dashboard"),
             fluidRow(
-              valueBoxOutput("compRate"),
-              valueBoxOutput("compTM"),
-              valueBoxOutput("avgGr")
-            ),
-
-            ###Sign-up dates and completion rates
-
-            fluidRow(
-              #Grade distribution
-              column(width = 6,
-                     box(title = "Grade distribution", status = "primary", solidHeader = TRUE,
-                         htmlOutput("histGrades"), width=12, height = NULL, background = "blue")
-                     ),
-            
-              #Completion rates
-              column(width = 6,
-                     box(title = "Completion rates", status = "primary", solidHeader = TRUE,
-                         htmlOutput("barChartComp"), width = 12, height = NULL, background = "blue")
-                     )
-            ),
-
-            ### Completers per month and grade distribution
-
-            fluidRow(
-              #Completers per month
-              column(width = 6,
-                     box(title = "Completers per month", status = "primary", solidHeader = TRUE,
-                         htmlOutput("completersPM"), width=12, height = NULL, background = "blue")
-              ),
-            
-              #Sign-ups
-              column(width = 6,
-                     box(title = "Sign-up dates over time", status = "primary", solidHeader = TRUE,
-                         htmlOutput("joinLine"), width = 12, height = NULL, background = "blue")
+              valueBoxOutput("valueBoxTotalStudents"),
+              valueBoxOutput("valueBoxActiveStudents"),
+              valueBoxOutput("valueBoxBrowsingStudents"),
+              valueBoxOutput("valueBoxCourseCompleters"),
+              valueBoxOutput("valueBoxPayments"),
+              valueBoxOutput("valueBoxFinancialAid"),
+              box(width = 12,
+                  title = "Enrollers over the past 90 days",
+                  plotlyOutput("chartUsersOverTime"))
               )
-            )
+            ),
+    # Geography
+    tabItem(tabName = "geography",
+                leafletOutput("leafletMapCountryOfOrigin",
+                              width = "100%",
+                              height = "500")
             ),
     # Settings
     tabItem(tabName = "settings",
@@ -108,11 +83,18 @@ body <- dashboardBody(
                 box(
                   width = NULL,
                   h3("PostgreSQL settings"),
-                  textInput(inputId = "psqlhostname", label = "Hostname", value = postgres_defaults$hostname),
-                  textInput(inputId = "psqlport", label = "Port", value = postgres_defaults$port),
-                  textInput(inputId = "psqlusername", label = "User", value = postgres_defaults$user),
-                  textInput(inputId = "psqlpassword", label = "Password", value = postgres_defaults$password),
-                  #textInput(inputId = "psqldatabase", label = "Database", value = postgres_defaults$database),
+                  textInput(inputId = "psqlhostname", 
+                            label = "Hostname", 
+                            value = postgres_defaults$hostname),
+                  textInput(inputId = "psqlport", 
+                            label = "Port", 
+                            value = postgres_defaults$port),
+                  textInput(inputId = "psqlusername", 
+                            label = "User", value = postgres_defaults$user),
+                  textInput(inputId = "psqlpassword", 
+                            label = "Password", value = postgres_defaults$password),
+                  textInput(inputId = "psqldatabase", 
+                            label = "Database", value = postgres_defaults$database),
                   p("Click to save as default"),
                   actionButton("saveSettingsButton", "Save")
                 )
@@ -129,7 +111,8 @@ body <- dashboardBody(
                                     names(course_list), " = ", unlist(unname(course_list)),
                                     collapse = ",\n"
                                 ),
-                                rows = ifelse(length(course_list) <= 10, length(course_list), 10)
+                                rows = ifelse(length(course_list) <= 10, 
+                                              length(course_list), 10)
                               ),
                   p("Click to save as default"),
                   actionButton("saveCoursesButton", "Save")
