@@ -1,3 +1,6 @@
 {
-  "terrorism": ["terrorism"]
+  "terrorism": ["terrorism"],
+  "humanlang": ["humanlang"],
+  "taxation": ["taxation"],
+  "mindfulness": ["mindfulness"]
 }

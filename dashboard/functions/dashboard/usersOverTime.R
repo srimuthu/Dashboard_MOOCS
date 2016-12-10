@@ -10,7 +10,7 @@
 #' @importFrom countrycode countrycode
 #' 
 
-usersOverTime <- function(con, from = as.character(Sys.Date() - 90), to = Sys.Date()) {
+usersOverTime <- function(con, from = as.character(Sys.Date() - 150), to = Sys.Date()) {
   
   source("functions/dashboard/movingAverage.R")
   
@@ -33,6 +33,6 @@ usersOverTime <- function(con, from = as.character(Sys.Date() - 90), to = Sys.Da
     arrange(date) %>%
     collect() %>%
     # Calculate moving average
-    mutate(SMA = movingAverage(Enrollers, n=3))
+    mutate(SMA = movingAverage(Enrollers, n=5))
   
 }

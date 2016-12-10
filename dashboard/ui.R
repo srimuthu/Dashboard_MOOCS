@@ -26,7 +26,7 @@ header <- dashboardHeader(
 
 sidebar <-   dashboardSidebar(
   sidebarMenu(
-    menuItem("EIT-Overview", tabName = "eitOverview"), # Can we give this a generic name too?
+    menuItem("Overview", tabName = "coursesoverview"), 
     menuItem("Dashboard", tabName = "dashboard"),
     menuItem("Geography", tabName = "geography"),
     menuItem("Settings", tabName = "settings"),
@@ -50,7 +50,32 @@ body <- dashboardBody(
   
   tabItems(
     #EIT Overview
-    tabItem(tabName = "eitOverview"
+    tabItem(tabName = "coursesoverview",
+            fluidRow(
+              valueBoxOutput("valueBoxSummaryTotalStudents"),
+              valueBoxOutput("valueBoxSummaryCompleted"),
+              valueBoxOutput("valueBoxSummaryPayments")
+            ),
+            fluidRow(
+              column(
+                width = 6,
+                box(
+                  width = NULL,
+                  title = "Conversion rate",
+                  p("The conversion rate is calculated by dividing the number of paying students by the total number of enrolled students."),
+                  plotlyOutput("chartSummaryConversion", height = "300px")
+                )
+              ),
+              column(
+                width = 6,
+                box(
+                  width = NULL,
+                  title = "Graduation percentage",
+                  p("The graduation percentage is calculated by dividing the number of students who have finished the course by the total number of enrolled students."),
+                  plotlyOutput("chartSummaryGraduation", height = "300px")
+                )
+              )
+            )
             ),
     #Dashboard
     tabItem(tabName = "dashboard",
@@ -68,9 +93,31 @@ body <- dashboardBody(
             ),
     # Geography
     tabItem(tabName = "geography",
-                leafletOutput("leafletMapCountryOfOrigin",
-                              width = "100%",
-                              height = "500")
+            fluidRow(
+              column(
+                width = 8,
+                box(
+                  width = NULL,
+                  title = "Where do learners come from?",
+                  leafletOutput("leafletMapCountryOfOrigin",
+                                width = "100%",
+                                height = "500")
+                )
+              ),
+              column(
+                width = 4,
+                box(
+                  width = NULL,
+                  title = "Map settings",
+                  p("You can show counts, or you can normalize the raw figures by population and by the number of internet users in a country."),
+                  selectInput("mapSettingsInput", "", choices = c("None", 
+                                                                  "Population", 
+                                                                  "Internet users"),
+                              selected = "None")
+                )
+              )
+            )
+
             ),
     # Settings
     tabItem(tabName = "settings",

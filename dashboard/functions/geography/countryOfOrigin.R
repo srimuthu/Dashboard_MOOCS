@@ -9,7 +9,7 @@
 #' @importFrom dplyr %>%, select, tbl, group_by, summarize, arrange, collect, mutate, filter
 #' @importFrom countrycode countrycode
 
-countryOfOrigin <- function(con, from = "1970-01-01", to = as.character(Sys.Date())) {
+countryOfOrigin <- function(con,from = "1970-01-01", to = as.character(Sys.Date())) {
   
   # From/to date --> check if right format ie. YYYY-MM-DD
   if(is.na(try(as.Date(from, format = "%Y-%m-%d")))) stop("Please enter a date in the following format: YYYY-MM-DD")
