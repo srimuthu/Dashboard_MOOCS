@@ -39,3 +39,10 @@ source("functions/forum/uniqueForumPosts.R")
 source("functions/forum/uniqueForumResponses.R")
 source("functions/forum/averagePostLength.R")
 
+# ----------------------------------
+# TAB GRADED TESTS HELPER FUNCTIONS
+# ----------------------------------
+
+source("functions/gradedTests/retrieveGradedTests.R")
+source("functions/gradedTests/getIds.R")
+source("functions/gradedTests/checkIfMultipleBranches.R")
