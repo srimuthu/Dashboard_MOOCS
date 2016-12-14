@@ -390,6 +390,93 @@ function(input, output, session) {
   })
   
   # ---------------------------------------
+  # TAB GRADED QUIZZES OUTPUT
+  # --------------------------------------- 
+  
+  # When the selected course changes, reset all values
+  observeEvent(input$selectCourse, {
+    # Reset the shiny input value to NULL (else it keeps the input value of a previous course if that course had branches)
+    # resetValue is defined in ui.R on lines 53-55
+    session$sendCustomMessage(type = "resetValue", message = "gradedTestSelectBranch")
+    session$sendCustomMessage(type = "resetValue", message = "gradedTestSelectQuiz")
+    session$sendCustomMessage(type = "resetValue", message = "gradedTestSelectQuizVersion")
+  })
+  
+  # If the course has branches, show branches
+  output$tabGradedTestsSelectBranch <- renderUI({
+    # Get course selection
+    c <- psql_db()
+    # Connect to postgres
+    con <- psql(psql_host(), psql_port(), psql_user(), psql_pwd(), psql_db())
+    # If branches exist, query
+    if(checkIfMultipleBranches(con)) {
+      t <- retrieveGradedTests(con, from = d[1], to = d[2]) %>%
+        select(course_branch_id) 
+      # Return a selectInput
+      ret <- selectInput("gradedTestSelectBranch", "Select a branch:", 
+                    choices = unique(t$course_branch_id), selected = NULL, width = "75%")
+    } else {
+      ret <- NULL
+    }
+    # Disconnect
+    dbDisconnect(con$con)
+    return(ret)
+  })
+  
+  # Create a drop-down list for available quizzes
+  output$tabGradedTestsSelectQuiz <- renderUI({
+    # Get dates
+    d<-dates()
+    # Connect to postgres
+    con <- psql(psql_host(), psql_port(), psql_user(), psql_pwd(), psql_db())
+    # Retrieve tests
+    t <- retrieveGradedTests(con, from = d[1], to = d[2]) 
+    # Close connection
+    dbDisconnect(con$con)
+    # If branch is select, filter for branch
+    if(!is.null(input$gradedTestSelectBranch)) {
+      t <- t %>%
+        filter(course_branch_id == input$gradedTestSelectBranch)
+    } 
+    # Add selectize input
+    selectInput("gradedTestSelectQuiz", "Select a quiz:", choices = unique(t$course_item_name), selected = NULL, width = "75%")
+  }) 
+  
+  # Create a drop-down list for available versions
+  output$tabGradedTestsSelectQuizVersion <- renderUI({
+    # If no quiz selected, return NULL
+    if(is.null(input$gradedTestSelectQuiz)) {
+      return(NULL)
+    }
+    # Get dates
+    d<-dates()
+    # Connect to postgres
+    con <- psql(psql_host(), psql_port(), psql_user(), psql_pwd(), psql_db())
+    # Retrieve tests
+    t <- retrieveGradedTests(con, from = d[1], to = d[2]) %>%
+      # Create version
+      mutate(version = getIds(assessment_id)) %>%
+      # Arrange each item by version number
+      group_by(course_item_name) %>%
+      arrange(version) %>%
+      ungroup()
+    # Close connection
+    dbDisconnect(con$con)
+    # If branch is select, filter for branch
+    if(!is.null(input$gradedTestSelectBranch)) {
+      t <- t %>%
+        filter(course_branch_id == input$gradedTestSelectBranch) %>%
+        # Then filter for question
+        filter(course_item_name == input$gradedTestSelectQuiz)
+    }
+    # Return selectize input for quiz version
+    selectInput("gradedTestSelectQuizVersion", "Select a quiz version:", choices = unique(t$version), selected = 1,
+                width = "75%")
+  })
+  
+
+  
+  # ---------------------------------------
   # TAB FORUM OUTPUT
   # ---------------------------------------  
   
@@ -475,6 +562,7 @@ function(input, output, session) {
     con <- psql(psql_host(), psql_port(), psql_user(), psql_pwd(), psql_db())
     # calculate total students
     TS <- averagePostLength(con, from = d[1], to = d[2])
+    if(is.nan(TS)) TS <- "-"
     # Close connection
     dbDisconnect(con$con)
     # Valuebox
@@ -482,5 +570,7 @@ function(input, output, session) {
       TS, "Average post length", icon = icon("long-arrow-right"), color = "blue"
     )
   })
+  
+  
   
 }
