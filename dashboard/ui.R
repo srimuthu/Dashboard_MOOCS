@@ -30,7 +30,7 @@ sidebar <-   dashboardSidebar(
     menuItem("Overview", tabName = "coursesoverview"), 
     menuItem("Dashboard", tabName = "dashboard"),
     menuItem("Geography", tabName = "geography"),
-    menuItem("Graded assignments", tabName = "gradedassignments"),
+    menuItem("Graded quizzes", tabName = "gradedquizzes"),
     menuItem("Forum", tabName = "forum"),
     menuItem("Settings", tabName = "settings"),
     menuItem("Contact", href = "mailto:s.m.n.balasubramanian@student.tue.nl", 
@@ -48,6 +48,13 @@ sidebar <-   dashboardSidebar(
 # Body -----
 
 body <- dashboardBody(
+  
+  # Add JS script to reset input values when no longer needed
+  # Taken from http://stackoverflow.com/questions/38347913/shiny-in-r-how-to-set-an-input-value-to-null-after-clicking-on-a-button
+  # Author: K. Rohde (http://stackoverflow.com/users/5836932/k-rohde)
+  tags$script("Shiny.addCustomMessageHandler('resetValue', function(variableName) {
+              Shiny.onInputChange(variableName, null);
+              });"),
   
   # Use custom CSS
   tags$head(
@@ -124,6 +131,22 @@ body <- dashboardBody(
               )
             )
 
+            ),
+    # Graded quizzes
+    tabItem(tabName = "gradedquizzes",
+            fluidRow(
+              column(
+                width = 6,
+                box(
+                  title = "Quiz options",
+                  width = NULL,
+                  p("Select a quiz from the drop-down menu below. You can further select for course version (if you have multiple versions running) and quiz version (if you have updated the same quiz once or more times)"),
+                  uiOutput("tabGradedTestsSelectBranch"),
+                  uiOutput("tabGradedTestsSelectQuiz"),
+                  uiOutput("tabGradedTestsSelectQuizVersion")
+                  )
+                ) 
+              )
             ),
     # Forum stats
     tabItem(tabName = "forum",
