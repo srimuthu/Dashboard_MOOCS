@@ -9,6 +9,7 @@
 library(shiny)
 library(shinydashboard)
 library(leaflet)
+library(plotly)
 
 # Load json with postgresql defaults
 postgres_defaults <- jsonlite::fromJSON("settings/postgres_defaults.json")
@@ -29,12 +30,17 @@ sidebar <-   dashboardSidebar(
     menuItem("Overview", tabName = "coursesoverview"), 
     menuItem("Dashboard", tabName = "dashboard"),
     menuItem("Geography", tabName = "geography"),
+    menuItem("Graded assignments", tabName = "gradedassignments"),
+    menuItem("Forum", tabName = "forum"),
     menuItem("Settings", tabName = "settings"),
-    menuItem("Contact", href = "mailto:s.m.n.balasubramanian@student.tue.nl", icon = icon("envelope")),
+    menuItem("Contact", href = "mailto:s.m.n.balasubramanian@student.tue.nl", 
+             icon = icon("envelope")),
     selectInput("selectCourse", label = h3("Select Course"), 
                 choices = course_list, 
                 selected = 1),
-    dateRangeInput("daterange", label = h3("Select Date Range"), start = Sys.Date() - 14,
+    dateRangeInput("daterange", 
+                   label = h3("Select Date Range"), 
+                   start = Sys.Date() - 30,
                    end = Sys.Date())
   )
 )
@@ -87,7 +93,7 @@ body <- dashboardBody(
               valueBoxOutput("valueBoxPayments"),
               valueBoxOutput("valueBoxFinancialAid"),
               box(width = 12,
-                  title = "Enrollers over the past 90 days",
+                  title = "Enrollers over the past 120 days",
                   plotlyOutput("chartUsersOverTime"))
               )
             ),

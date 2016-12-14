@@ -4,10 +4,13 @@
 #'
 #' @param con Postgresql connection object returned by the \seealso{psql} function.
 #' 
+#' @return A tibble containing aggregate data for countries and the number of students who belong to that country.
+#' 
 #' @author Jasper Ginn
 #'
 #' @importFrom dplyr %>%, select, tbl, group_by, summarize, arrange, collect, mutate, filter
 #' @importFrom countrycode countrycode
+#' 
 
 countryOfOrigin <- function(con,from = "1970-01-01", to = as.character(Sys.Date())) {
   

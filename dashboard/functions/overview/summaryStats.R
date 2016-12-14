@@ -4,6 +4,8 @@
 #'
 #' @param con Postgresql connection object returned by the \seealso{psql} function.
 #' 
+#' @return Returns TRUE if operation is successful
+#' 
 #' @author Jasper Ginn
 #'
 #' @importFrom dplyr %>%, select, tbl, group_by, summarize, arrange, collect, mutate, filter
@@ -24,7 +26,7 @@ source("functions/dashboard/numberFinancialAid.R")
 source("functions/dashboard/usersOverTime.R")
 source("functions/psql.R")
 
-summaryStats <- function(con, from = "1970-01-01", to = as.character(Sys.Date())) {
+summaryStats <- function(from = "1970-01-01", to = as.character(Sys.Date())) {
   
   # -------
   # CHECKS

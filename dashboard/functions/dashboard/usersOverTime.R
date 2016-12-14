@@ -4,13 +4,15 @@
 #'
 #' @param con Postgresql connection object returned by the \seealso{psql} function.
 #' 
+#' @return A tibble with at most 120 rows and 3 columns (column names: date, Enrollers, and SMA) --> Simple moving average 
+#' 
 #' @author Jasper Ginn
 #'
 #' @importFrom dplyr %>%, select, tbl, group_by, summarize, arrange, collect, mutate, filter
 #' @importFrom countrycode countrycode
 #' 
 
-usersOverTime <- function(con, from = as.character(Sys.Date() - 150), to = Sys.Date()) {
+usersOverTime <- function(con, from = as.character(Sys.Date() - 120), to = Sys.Date()) {
   
   source("functions/dashboard/movingAverage.R")
   

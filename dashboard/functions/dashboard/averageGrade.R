@@ -5,6 +5,8 @@
 #' @param to Date to which you want to query (inclusive). Defaults to date of today. Must be passed in YYYY-MM-DD format. 
 #' @param digits Number of digits used to round return value. Defaults to 3.
 #' 
+#' @return Numeric vector of length 1 containing the average grade rounded to three decimals.
+#' 
 #' @author Jasper Ginn
 #'
 #' @importFrom dplyr %>%, tbl, summarize, collect, filter, n()

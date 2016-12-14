@@ -16,7 +16,7 @@ fonts_selector <- function(...) {
 #' 
 
 CFI_palette <- function() {
-  colors <- RColorBrewer::brewer.pal(8, "Set1")
+  colors= c("#771155", "#AA4488", "#CC99BB", "#114477", "#4477AA", "#77AADD", "#117777", "#44AAAA", "#77CCCC", "#117744", "#44AA77", "#88CCAA", "#777711", "#AAAA44", "#DDDD77", "#774411", "#AA7744", "#DDAA77", "#771122", "#AA4455", "#DD7788")
   return(colors)
 }
 

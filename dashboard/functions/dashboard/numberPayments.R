@@ -6,6 +6,8 @@
 #' @param from Date from which you want to query (inclusive). Must be passed in YYYY-MM-DD format. 
 #' @param to Date to which you want to query (inclusive). Defaults to date of today. Must be passed in YYYY-MM-DD format. 
 #' 
+#' @return Numeric vector of length 1 containing the number of students who bought a certificate.
+#' 
 #' @author Jasper Ginn
 #'
 #' @importFrom dplyr %>%, tbl, summarize, collect, filter, n(), select, distinct

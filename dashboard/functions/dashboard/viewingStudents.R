@@ -1,10 +1,12 @@
-#' Calculate the number of 'viewers'
+#' Calculate the number of browsing students
 #' 
-#' Definition: Number of people who engage with content except (graded) assignments  in at least 1 of the courses
+#' Definition: Number of people who engage with content except (graded) assignments in at least 1 of the courses
 #' 
 #' @param con Postgresql connection object returned by the \seealso{psql} function.
 #' @param from Date from which you want to query (inclusive). Must be passed in YYYY-MM-DD format. 
 #' @param to Date to which you want to query (inclusive). Defaults to date of today. Must be passed in YYYY-MM-DD format. 
+#' 
+#' @return Numeric vector of length 1 containing the number of browsing students
 #' 
 #' @author Jasper Ginn
 #'

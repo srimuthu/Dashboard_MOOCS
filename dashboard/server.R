@@ -146,7 +146,8 @@ function(input, output, session) {
     # Disconnect
     dbDisconnect(con$con)
     # Plot
-    p <- ggplot(SS, aes(x=reorder(course, -conversion), y=conversion, label = label, fill = course)) +
+    p <- ggplot(SS, aes(x=reorder(course, -conversion), 
+                        y=conversion, label = label, fill = course)) +
       geom_bar(stat= "identity") +
       theme_cfi_scientific() +
       scale_fill_manual(values = CFI_palette(),
@@ -174,7 +175,8 @@ function(input, output, session) {
     # Disconnect
     dbDisconnect(con$con)
     # Plot
-    p <- ggplot(SS, aes(x=reorder(course, -completion), y=completion, label = label, fill = course)) +
+    p <- ggplot(SS, aes(x=reorder(course, -completion),
+                        y=completion, label = label, fill = course)) +
       geom_bar(stat= "identity") +
       theme_cfi_scientific() +
       scale_fill_manual(values = CFI_palette(),
@@ -292,8 +294,14 @@ function(input, output, session) {
       geom_area(fill = "red", alpha = 0.6) +
       geom_line(aes(x=date, y=SMA), color = "#808080", size = 1) +
       theme_cfi_scientific() +
-      scale_x_date(name = "") +
-      scale_y_continuous(name = "Number of enrollers")
+      scale_x_date(name = "",
+                   expand = c(0.01,0)) +
+      scale_y_continuous(name = "Number of enrollers",
+                         expand = c(0.03,0)) +
+      theme(
+        axis.ticks.x = element_line(),
+        axis.text.x = element_text()
+      )
     # Close connection
     dbDisconnect(con$con)
     # Push through plotly to make interactive
@@ -360,7 +368,8 @@ function(input, output, session) {
       filter(!is.na(n),
              !is.infinite(n))
     # Create color palette
-    pal <- colorQuantile(RColorBrewer::brewer.pal(5, "Blues"), domain = tmpvalues$n)
+    pal <- colorQuantile(RColorBrewer::brewer.pal(5, "Blues"), 
+                         domain = tmpvalues$n, n=5)
     # Validate that quantiles are unique
     validate(
       need(
