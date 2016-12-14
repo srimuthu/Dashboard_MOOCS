@@ -1,4 +1,6 @@
-#' Get the number of unique forum posts
+#' Average length of discussions
+#' 
+#' This function calculates the average length for both discussions and responses.
 #' 
 #' @param con Postgresql connection object returned by the \seealso{psql} function.
 #' @param includePrompts Whether or not to include discussion prompts as forum posts. Defaults to TRUE.
@@ -13,7 +15,9 @@
 #' @importFrom dplyr %>%, tbl, summarize, collect, filter, n(), select, distinct
 #' 
 
-forumPosts <- function(con, includePrompts = TRUE, post_length_threshold = 50, from = as.character(Sys.Date() - 30), to = as.character(Sys.Date())) {
+averagePostLength <- function(con, includePrompts = TRUE, post_length_threshold = 50, from = as.character(Sys.Date() - 30), to = as.character(Sys.Date())) {
+  
+  source("functions/forum/removeHTML.R")
   
   # From/to date --> check if right format ie. YYYY-MM-DD
   if(is.na(try(as.Date(from, format = "%Y-%m-%d")))) stop("Please enter a date in the following format: YYYY-MM-DD")
@@ -28,21 +32,29 @@ forumPosts <- function(con, includePrompts = TRUE, post_length_threshold = 50, f
       filter(is.na(course_item_id)) 
   }
   
-  # Continue query
-  dq2 <- dq %>% 
-    # Combine with discussion forums data
-    left_join(., tbl(con, "discussion_course_forums"),
-              by = "discussion_forum_id") %>% 
+  # Query posts and responses
+  PR <- dq %>%
     # Filter for dates
     filter(discussion_question_created_ts >= from,
            discussion_question_created_ts <= to) %>%
-    # Filter for posts below threshold
-    filter(nchar(discussion_question_details) >= post_length_threshold) %>%
-    # Count number of distinct forum ids and return
-    summarize(count = n_distinct(discussion_question_id)) %>%
-    collect()
+    # Select variables
+    select(discussion_question_id, discussion_question_details) %>%
+    # Join with answers
+    inner_join(tbl(con, "discussion_answers") %>%
+                 select(discussion_question_id,
+                        discussion_answer_content),
+               by = "discussion_question_id") %>%
+    collect() 
+  
+  # Add together, remove html, calculate number of characters and take average
+  postsmean <- mean(
+    nchar(
+    removeHTML(c(unique(PR$discussion_question_details), 
+                        unique(PR$discussion_answer_content)))
+    )
+  )
   
   # Return
-  return(dq2$count)
+  return(round(postsmean, digits = 0))
   
 }

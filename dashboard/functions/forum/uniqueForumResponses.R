@@ -29,15 +29,19 @@ forumResponses <- function(con, includePrompts = TRUE, post_length_threshold = 5
   }
   
   # Continue query
-  dq2 <- dq %>% 
-    # Combine with discussion forums data
-    left_join(., tbl(con, "discussion_course_forums"),
-              by = "discussion_forum_id") %>% 
+  dq2 <- dq %>%
+    # Select for discussion id
+    select(discussion_question_id) %>%
+    # Merge with discussion answers
+    left_join(tbl(con, "discussion_answers"),
+              by = "discussion_question_id") %>%
     # Filter for dates
-    filter(discussion_question_created_ts >= from,
-           discussion_question_created_ts <= to) %>%
-    # Count number of distinct forum ids and return
-    summarize(count = n_distinct(discussion_forum_id)) %>%
+    filter(discussion_answer_created_ts >= from,
+           discussion_answer_created_ts <= to) %>%
+    # Select user id
+    select(user_id = ends_with("user_id")) %>%
+    # Get distinct
+    summarize(count = n_distinct(user_id)) %>%
     collect()
   
   # Return

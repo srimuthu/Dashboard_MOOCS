@@ -27,3 +27,15 @@ source("functions/dashboard/usersOverTime.R")
 # -------------------------------
 
 source("functions/geography/countryOfOrigin.R")
+
+# -------------------------------
+# TAB FORUM HELPER FUNCTIONS
+# -------------------------------
+
+source("functions/forum/activeForuminitiators.R")
+source("functions/forum/activeForumUsers.R")
+source("functions/forum/activeForumResponders.R")
+source("functions/forum/uniqueForumPosts.R")
+source("functions/forum/uniqueForumResponses.R")
+source("functions/forum/averagePostLength.R")
+

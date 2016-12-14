@@ -125,6 +125,17 @@ body <- dashboardBody(
             )
 
             ),
+    # Forum stats
+    tabItem(tabName = "forum",
+            fluidRow(
+              valueBoxOutput("valueBoxActiveForumUsers"),
+              valueBoxOutput("valueBoxActiveForumPosters"),
+              valueBoxOutput("valueBoxActiveForumResponders"),
+              valueBoxOutput("valueBoxUniqueForumPosts"),
+              valueBoxOutput("valueBoxUniqueForumResponses"),
+              valueBoxOutput("valueBoxAveragePostLength")
+            )
+    ),
     # Settings
     tabItem(tabName = "settings",
             # Fluidrow is bootstrap allocation of space (essentially 12 columns)

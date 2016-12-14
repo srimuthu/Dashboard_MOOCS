@@ -389,4 +389,98 @@ function(input, output, session) {
     
   })
   
+  # ---------------------------------------
+  # TAB FORUM OUTPUT
+  # ---------------------------------------  
+  
+  # Active Forum Users
+  output$valueBoxActiveForumUsers <- renderValueBox({
+    d<-dates()
+    # Connect to postgres
+    con <- psql(psql_host(), psql_port(), psql_user(), psql_pwd(), psql_db())
+    # calculate total users
+    TS <- activeForumUsers(con, from = d[1], to = d[2])
+    # Close connection
+    dbDisconnect(con$con)
+    # Valuebox
+    valueBox(
+      TS, "Number of unique forum users", icon = icon("users"), color = "purple"
+    )
+  })
+  
+  # Active forum posters
+  output$valueBoxActiveForumPosters <- renderValueBox({
+    d<-dates()
+    # Connect to postgres
+    con <- psql(psql_host(), psql_port(), psql_user(), psql_pwd(), psql_db())
+    # calculate total students
+    TS <- activeForumPostInitiators(con, from = d[1], to = d[2])
+    # Close connection
+    dbDisconnect(con$con)
+    # Valuebox
+    valueBox(
+      TS, "Number of students who initiated a post", icon = icon("clipboard"), color = "purple"
+    )
+  })
+  
+  # Students who respond to a post
+  output$valueBoxActiveForumResponders <- renderValueBox({
+    d<-dates()
+    # Connect to postgres
+    con <- psql(psql_host(), psql_port(), psql_user(), psql_pwd(), psql_db())
+    # calculate total number of students who respond to a post
+    TS <- activeForumPostResponders(con, from = d[1], to = d[2])
+    # Close connection
+    dbDisconnect(con$con)
+    # Valuebox
+    valueBox(
+      TS, "Number of students who responded to a post", icon = icon("mail-reply"), color = "purple"
+    )
+  })
+  
+  # Course completers
+  output$valueBoxUniqueForumPosts<- renderValueBox({
+    d<-dates()
+    # Connect to postgres
+    con <- psql(psql_host(), psql_port(), psql_user(), psql_pwd(), psql_db())
+    # calculate total students
+    TS <- forumPosts(con, from = d[1], to = d[2])
+    # Close connection
+    dbDisconnect(con$con)
+    # Valuebox
+    valueBox(
+      TS, "Unique posts", icon = icon("file-text"), color = "blue"
+    )
+  })
+  
+  # Number of unique responses
+  output$valueBoxUniqueForumResponses <- renderValueBox({
+    d<-dates()
+    # Connect to postgres
+    con <- psql(psql_host(), psql_port(), psql_user(), psql_pwd(), psql_db())
+    # calculate total students
+    TS <- forumResponses(con, from = d[1], to = d[2])
+    # Close connection
+    dbDisconnect(con$con)
+    # Valuebox
+    valueBox(
+      TS, "Unique responses", icon = icon("mail-reply-all"), color = "blue"
+    )
+  })
+  
+  # Average post length
+  output$valueBoxAveragePostLength <- renderValueBox({
+    d<-dates()
+    # Connect to postgres
+    con <- psql(psql_host(), psql_port(), psql_user(), psql_pwd(), psql_db())
+    # calculate total students
+    TS <- averagePostLength(con, from = d[1], to = d[2])
+    # Close connection
+    dbDisconnect(con$con)
+    # Valuebox
+    valueBox(
+      TS, "Average post length", icon = icon("long-arrow-right"), color = "blue"
+    )
+  })
+  
 }

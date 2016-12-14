@@ -10,3 +10,7 @@
 #'
 #' @importFrom dplyr %>%, tbl, summarize, collect, filter, n(), select, distinct
 #' 
+
+removeHTML <- function(html) {
+  return(gsub("<.*?>", "", html))
+}
