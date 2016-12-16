@@ -1,8 +1,9 @@
 
-# This is the server logic for a Shiny web application.
-# You can find out more about building applications with Shiny here:
 #
-# http://shiny.rstudio.com
+# Server logic for Coursera data dashboard.
+# Project by Leiden University (Jasper Ginn) & EIT digital (S.M.N.Balasubramanian)
+#
+# Development version
 #
 
 library(shiny)
@@ -12,6 +13,7 @@ library(dplyr)
 library(ggplot2)
 library(plotly)
 library(scales)
+library(purrr)
 
 # Shiny server
 function(input, output, session) {
@@ -402,8 +404,14 @@ function(input, output, session) {
     session$sendCustomMessage(type = "resetValue", message = "gradedTestSelectQuizVersion")
   })
   
+  # When the quiz question changes, reset quiz values and quiz versions
+  observeEvent(input$gradedTestSelectQuiz, {
+    session$sendCustomMessage(type = "resetValue", message = "gradedTestSelectQuizVersion")
+  })
+  
   # If the course has branches, show branches
   output$tabGradedTestsSelectBranch <- renderUI({
+    d <- dates()
     # Get course selection
     c <- psql_db()
     # Connect to postgres
@@ -414,7 +422,7 @@ function(input, output, session) {
         select(course_branch_id) 
       # Return a selectInput
       ret <- selectInput("gradedTestSelectBranch", "Select a branch:", 
-                    choices = unique(t$course_branch_id), selected = NULL, width = "75%")
+                    choices = unique(t$course_branch_id), selected = 1, width = "75%")
     } else {
       ret <- NULL
     }
@@ -439,7 +447,8 @@ function(input, output, session) {
         filter(course_branch_id == input$gradedTestSelectBranch)
     } 
     # Add selectize input
-    selectInput("gradedTestSelectQuiz", "Select a quiz:", choices = unique(t$course_item_name), selected = NULL, width = "75%")
+    selectInput("gradedTestSelectQuiz", "Select a quiz:", 
+                choices = unique(t$course_item_name), selected = 1, width = "75%")
   }) 
   
   # Create a drop-down list for available versions
@@ -468,13 +477,188 @@ function(input, output, session) {
         filter(course_branch_id == input$gradedTestSelectBranch) %>%
         # Then filter for question
         filter(course_item_name == input$gradedTestSelectQuiz)
+    } else { # Filter for question
+      t <- t %>%
+        filter(course_item_name == input$gradedTestSelectQuiz)
     }
     # Return selectize input for quiz version
-    selectInput("gradedTestSelectQuizVersion", "Select a quiz version:", choices = unique(t$version), selected = 1,
+    selectInput("gradedTestSelectQuizVersion", 
+                "Select a quiz version:", choices = unique(t$version), 
+                selected = length(unique(t$version)),
                 width = "75%")
   })
   
-
+  # Reactive value to select quiz + version on branch
+  quizData <- reactive({
+    # Get dates
+    d<-dates()
+    # Get select input data
+    branch <- input$gradedTestSelectBranch
+    quiz <- input$gradedTestSelectQuiz
+    version.p <- input$gradedTestSelectQuizVersion
+    # If quiz / version are NULL, return NULL
+    if(is.null(quiz) | is.null(version.p)) {
+      return(NULL)
+    }
+    # Connect to postgres
+    con <- psql(psql_host(), psql_port(), psql_user(), psql_pwd(), psql_db())
+    # Retrieve tests
+    t <- retrieveGradedTests(con, from = d[1], to = d[2]) %>%
+      # Create version
+      mutate(version = getIds(assessment_id)) 
+    # Disconnect
+    dbDisconnect(con$con)
+    # If branch is not NULL, select it
+    if(!is.null(branch)) {
+      t <- t %>%
+        filter(course_branch_id == branch)
+    }
+    # Filter for quiz and version
+    t <- t %>%
+      filter(course_item_name == quiz,
+             version == as.numeric(version.p))
+    # Return
+    return(t)
+  })
+  
+  # Value box for average grade
+  output$valueBoxAverageQuizGrade <- renderValueBox({
+    d <- quizData()
+    # Validate data
+    validate(
+      need(!is.null(d), "Loading ...")
+    )
+    # Attempt
+    at <- input$gradedTestSelectAttempt
+    # Open connection
+    con <- psql(psql_host(), psql_port(), psql_user(), psql_pwd(), psql_db())
+    # Query data
+    g <- quizAvgGrade(con, d$assessment_id, d$course_item_id, at)
+    # Close conncetion
+    dbDisconnect(con$con)
+    if(is.null(g)) g <- "-"
+    # Valuebox
+    valueBox(g, "Average grade", icon=icon("star"), color = "purple")
+  })
+  
+  # Value box for total number of responses
+  output$valueBoxQuizTotalResponses <- renderValueBox({
+    d <- quizData()
+    # Validate data
+    validate(
+      need(!is.null(d), "Loading ...")
+    )
+    # Open connection
+    con <- psql(psql_host(), psql_port(), psql_user(), psql_pwd(), psql_db())
+    # Query data
+    g <- quizTotalResponses(con, d$assessment_id, d$course_item_id)
+    # Close conncetion
+    dbDisconnect(con$con)
+    # Valuebox
+    valueBox(g, "Total responses", icon=icon("clipboard"), color = "purple")
+  })
+  
+  # Value box for total number of unique users
+  output$valueBoxQuizUniqueLearners <- renderValueBox({
+    d <- quizData()
+    # Validate data
+    validate(
+      need(!is.null(d), "Loading ...")
+    )
+    # Open connection
+    con <- psql(psql_host(), psql_port(), psql_user(), psql_pwd(), psql_db())
+    # Query data
+    g <- quizUniqueUsers(con, d$assessment_id, d$course_item_id)
+    # Close conncetion
+    dbDisconnect(con$con)
+    # Valuebox
+    valueBox(g, "Unique learners", icon=icon("user"), color = "purple")
+  })
+  
+  # Density plot for grade distribution
+  output$tabGradedTestsQuizDistribution <- renderPlotly({
+    d <- quizData()
+    # Validate data
+    validate(
+      need(!is.null(d), "Loading ...")
+    )
+    # Open connection
+    con <- psql(psql_host(), psql_port(), psql_user(), psql_pwd(), psql_db())
+    # Query data
+    g <- quizGetGrades(con, d$assessment_id, d$course_item_id)
+    # Need number of rows > 0
+    validate(
+      need(nrow(g) > 0, "No quiz scores for this assessment.")
+    )
+    # Close conncetion
+    dbDisconnect(con$con)
+    # Plot
+    p <- ggplot(g, aes(x=course_item_grade_overall)) +
+      geom_density(fill = "#0073B7") +
+      theme_cfi_scientific() 
+    ggplotly(p)
+  })
+  
+  # Reactive for attempt scores
+  attempt <- reactive({
+    input$pvalritscoreselectattempt
+  })
+  
+  # Histogram for RIT scores
+  output$tabGradedTestsQuizPvalRIT <- renderPlotly({
+    d <- quizData()
+    # Validate data when is null
+    validate(
+      need(!is.null(d), "Loading ...")
+    )
+    # Get attempt
+    at <- attempt()
+    cat(at)
+    # Open connection
+    con <- psql(psql_host(), psql_port(), psql_user(), psql_pwd(), psql_db())
+    # Collect test stats
+    ts <- queryTestStats(con, d$assessment_id, d$course_item_id, attempt = at)
+    # Disconnect
+    dbDisconnect(con$con)
+    # Validate ts data
+    validate(
+      need(!is.null(ts), "Loading ...")
+    )
+    # Ritscores & pval
+    pvals <- calculatePValue(ts$sumStats)
+    # Validate pvals
+    validate(
+      need(!is.null(pvals), "Cannot calculate this statistic for this quiz.")
+    )
+    ritscores <- ritScore(ts$sumStats, ts$sd)
+    # Validate ritscores
+    validate(
+      need(!is.null(ritscores), "Cannot calculate this statistic for this quiz.")
+    )
+    # Join together
+    joined <- pvals %>%
+      inner_join(ritscores, by = "assessment_question_id") %>%
+      left_join(ts$sumStats, by = "assessment_question_id")
+    # Label
+    joined$color <- classifyQuizItems(joined$pval, joined$ritscore)
+    # Plot
+    p <- ggplot(joined, aes(x=pval, y=ritscore, color = color, label = label)) +
+      geom_point() +
+      theme_cfi_scientific() +
+      scale_x_continuous(limits=c(0,1),
+                         name = "P-value") +
+      scale_y_continuous(name = "RIT score",
+                         limits = c(-1,1)) +
+      theme(axis.text.x = element_text(),
+            axis.ticks.x = element_line(),
+            axis.title.x = element_text(),
+            axis.title.y = element_text(),
+            legend.position = "none") +
+      scale_color_manual(values = c("green", "orange", "red"),
+                         name  = "Color coding")
+    
+    ggplotly(p)
+  })
   
   # ---------------------------------------
   # TAB FORUM OUTPUT
@@ -491,7 +675,8 @@ function(input, output, session) {
     dbDisconnect(con$con)
     # Valuebox
     valueBox(
-      TS, "Number of unique forum users", icon = icon("users"), color = "purple"
+      TS, "Number of unique forum users", 
+      icon = icon("users"), color = "purple"
     )
   })
   
@@ -506,7 +691,8 @@ function(input, output, session) {
     dbDisconnect(con$con)
     # Valuebox
     valueBox(
-      TS, "Number of students who initiated a post", icon = icon("clipboard"), color = "purple"
+      TS, "Number of students who initiated a post",
+      icon = icon("clipboard"), color = "purple"
     )
   })
   
@@ -521,7 +707,8 @@ function(input, output, session) {
     dbDisconnect(con$con)
     # Valuebox
     valueBox(
-      TS, "Number of students who responded to a post", icon = icon("mail-reply"), color = "purple"
+      TS, "Number of students who responded to a post", 
+      icon = icon("mail-reply"), color = "purple"
     )
   })
   

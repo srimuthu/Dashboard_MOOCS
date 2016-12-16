@@ -3,5 +3,5 @@
 	"port" : 5432,
 	"user" : "Jasper",
 	"password" : "",
-	"database" : "terrorism"
+	"database" : "mindfulness"
 }

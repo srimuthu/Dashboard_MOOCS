@@ -10,6 +10,7 @@ library(shiny)
 library(shinydashboard)
 library(leaflet)
 library(plotly)
+library(tidyr)
 
 # Load json with postgresql defaults
 postgres_defaults <- jsonlite::fromJSON("settings/postgres_defaults.json")
@@ -37,7 +38,7 @@ sidebar <-   dashboardSidebar(
              icon = icon("envelope")),
     selectInput("selectCourse", label = h3("Select Course"), 
                 choices = course_list, 
-                selected = 1),
+                selected = "terrorism"),
     dateRangeInput("daterange", 
                    label = h3("Select Date Range"), 
                    start = Sys.Date() - 30,
@@ -123,9 +124,10 @@ body <- dashboardBody(
                   width = NULL,
                   title = "Map settings",
                   p("You can show counts, or you can normalize the raw figures by population and by the number of internet users in a country."),
-                  selectInput("mapSettingsInput", "", choices = c("None", 
-                                                                  "Population", 
-                                                                  "Internet users"),
+                  selectInput("mapSettingsInput", "", 
+                              choices = c("None", 
+                                          "Population", 
+                                          "Internet users"),
                               selected = "None")
                 )
               )
@@ -145,8 +147,41 @@ body <- dashboardBody(
                   uiOutput("tabGradedTestsSelectQuiz"),
                   uiOutput("tabGradedTestsSelectQuizVersion")
                   )
-                ) 
+                ),
+              column(
+                width = 3,
+                valueBoxOutput("valueBoxAverageQuizGrade", 
+                               width = NULL)
+              ),
+              column(
+                width = 3,
+                valueBoxOutput("valueBoxQuizUniqueLearners",
+                               width = NULL)
+              ),
+              valueBoxOutput("valueBoxQuizTotalResponses")
+              ),
+            fluidRow(
+              column(
+                width = 6,
+                box(
+                  width = NULL,
+                  title = "Grade distribution",
+                  plotlyOutput("tabGradedTestsQuizDistribution")
+                )
+              ),
+              column(
+                width = 6,
+                box(
+                  width = NULL,
+                  title = "P-value v. RIT score",
+                  selectInput("pvalritscoreselectattempt",
+                              "Filter by quiz attempt:",
+                              choices <- c(1,2,3),
+                              selected = 1),
+                  plotlyOutput("tabGradedTestsQuizPvalRIT")
+                )
               )
+            )
             ),
     # Forum stats
     tabItem(tabName = "forum",

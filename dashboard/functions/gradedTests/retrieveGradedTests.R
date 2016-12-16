@@ -13,7 +13,8 @@
 #' @importFrom dplyr %>%, tbl, summarize, collect, filter, n(), select, distinct
 #' 
 
-retrieveGradedTests <- function(con, from = as.character(Sys.Date() - 30), to = as.character(Sys.Date())) {
+retrieveGradedTests <- function(con, from = as.character(Sys.Date() - 30), 
+                                to = as.character(Sys.Date())) {
   
   # From/to date --> check if right format ie. YYYY-MM-DD
   if(is.na(try(as.Date(from, format = "%Y-%m-%d")))) stop("Please enter a date in the following format: YYYY-MM-DD")
