@@ -11,3 +11,4 @@
 /dashboard/.Rhistory
 /dashboard/.RData
 .Rproj.user
+/dashboard/data/summary_stats.sqlite
