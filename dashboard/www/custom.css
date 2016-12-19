@@ -1,0 +1,145 @@
+/* Custom CSS for shiny dashboard */
+  
+  /* MAIN SCHTUFF */
+  
+  /* Body */
+  
+  .skin-blue .body {
+    font-family: "Helvetica Neue", Roboto, Arial, "Droid Sans", sans-serif;
+  }
+
+/* Sidebar color */
+  .skin-blue .left-side, 
+.skin-blue .main-sidebar,
+.skin-blue .wrapper {
+  background-color: #2A3F54;
+}
+
+/* main navbar */
+  .skin-blue .main-header {
+    background-color: #ededed;
+      border-bottom: 1px solid #D9DEE4;
+  }
+
+/* Sidebar nav bar color */
+  .skin-blue .main-header .logo {
+    background-color: #ededed;
+      color: #39495a;
+      font-weight: 800;
+    padding-top: 0.1cm;
+  }
+
+/* Body navbar color, size etc. */
+  .skin-blue .main-header .navbar {
+    background-color: #ededed;
+  }
+
+/* Navbar toggle button */
+  .skin-blue .main-header .navbar .sidebar-toggle {
+    color: #73879C;
+      font-size: 18px;
+  } 
+
+/* User image */
+  section.sidebar .user-panel {
+    min-height: 65px;
+    padding-top: 1cm;
+  }
+
+/* Sidebar text */
+  .skin-blue .sidebar a {
+    color: #dadada;
+  }
+
+/* Sidebar menu - left border color */
+  .skin-blue .sidebar-menu>li.active>a, .skin-blue .sidebar-menu>li:hover>a {
+    color: #fff;
+      background: #1e282c;
+      border-left-color: #585858;
+  }
+
+/* Boxes */
+  .box.box-solid.box-primary>.box-header {
+    color: #fff;
+      background: #a2a2a2;
+  }
+/* Box border */
+  .box.box-solid.box-primary {
+    border: 1px solid #a2a2a2;
+  }
+
+/* Google auth button */
+  .btn-primary {
+    background-color: #3c8dbc;
+      border-color: #367fa9;
+      margin-left: 10px;
+    margin-top: 20px;
+    margin-bottom: 20px;
+  }
+.btn-default {
+  background-color: #d4d4d4;
+    border-color: #8c8c8c;
+    margin-left: 10px;
+  margin-top: 20px;
+  margin-bottom: 20px;
+}
+.btn-default.hover, .btn-default:active, .btn-default:hover {
+  background-color: #8c8c8c;
+}
+.btn-default:hover {
+  border-color: #204d74;
+}
+
+/* Authentication/validation text */
+  .shiny-output-error-validation {
+    color: #888;
+      margin-left: 12px;
+  }
+
+/* Fonts */
+  
+  
+  /* ON HOVER EFFECTS */
+  
+  .skin-blue .main-header .navbar .sidebar-toggle:hover {
+    background-color: transparent;
+    color: #23527c;
+  }
+.skin-blue .main-header .logo:hover {
+  background-color: #ededed;
+}
+
+/* ON COLLAPSE EFFECTS */
+  
+  .sidebar-collapse .left-side, .sidebar-collapse .main-sidebar {
+    transform: translate(-160px,0);
+  }
+.sidebar-collapse .left-side, .sidebar-collapse .main-header .navbar {
+  transform: translate(-160px,0);
+}
+.sidebar-collapse .left-side, .sidebar-collapse .main-header .logo {
+  transform: translate(-160px,0);
+}
+.sidebar-collapse .pull-left {
+  transform: translate(160px,0);
+}
+.sidebar-collapse .sidebar-menu>li>a>.fa, .sidebar-menu>li>a>.glyphicon, .sidebar-menu>li>a>.ion {
+  transform: translate(160px,0);
+}
+.sidebar-collapse .main-header .logo {
+  transform: translate(-200px,0);
+}
+
+/* learner map */
+.leaflet {
+  height: 100%; 
+  width: 100%;
+}
+
+#leafletMapCountryOfOrigin {
+  height = calc(100vh - 80px) !important;
+}
+
+.leaflet-container {
+  background-color: #ecf0f5 !important;
+}

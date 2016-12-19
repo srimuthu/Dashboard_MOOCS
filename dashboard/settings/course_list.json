@@ -1,1 +1,15 @@
-{"ia": "iotarchitecture", "qfm1": "quantitativeformalmodeling1", "rts": "realtimesystems"}
+{
+  "terrorism": ["terrorism"],
+  "humanlang": ["humanlang"],
+  "taxation": ["taxation"],
+  "mindfulness": ["mindfulness"],
+  "archaeology": ["archeology"],
+  "evolution": ["evolution"],
+  "fedralism": ["federalism"],
+  "intlaw1": ["intlaw1"],
+  "intlaw2": ["intlaw2"],
+  "roosevelt": ["roosevelt"],
+  "kidneytransplant": ["kidneytransplant"],
+  "policonomy": ["policonomy"],
+  "anatomy": ["anatomy"]
+}
