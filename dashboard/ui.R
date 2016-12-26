@@ -31,6 +31,7 @@ sidebar <-   dashboardSidebar(
     menuItem("Overview", tabName = "coursesoverview"), 
     menuItem("Dashboard", tabName = "dashboard"),
     menuItem("Geography", tabName = "geography"),
+    menuItem("Videos", tabName = "videos"),
     menuItem("Graded quizzes", tabName = "gradedquizzes"),
     menuItem("Forum", tabName = "forum"),
     menuItem("Settings", tabName = "settings"),
@@ -134,6 +135,14 @@ body <- dashboardBody(
             )
 
             ),
+    #Videos
+    tabItem(tabName = "videos",
+            fluidRow(
+              valueBoxOutput("valueBoxTotalVideos")
+            )
+            
+            ),
+    
     # Graded quizzes
     tabItem(tabName = "gradedquizzes",
             fluidRow(

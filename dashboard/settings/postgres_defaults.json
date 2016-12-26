@@ -1,7 +1,0 @@
-{
-	"hostname" : "127.0.0.1",
-	"port" : 5432,
-	"user" : "Jasper",
-	"password" : "",
-	"database" : "mindfulness"
-}

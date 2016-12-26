@@ -29,6 +29,12 @@ source("functions/dashboard/usersOverTime.R")
 source("functions/geography/countryOfOrigin.R")
 
 # -------------------------------
+# TAB VIDEOS HELPER FUNCTIONS
+# -------------------------------
+
+source("functions/videos/totalVideos.R")
+
+# -------------------------------
 # TAB FORUM HELPER FUNCTIONS
 # -------------------------------
 

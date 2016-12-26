@@ -390,6 +390,25 @@ function(input, output, session) {
       setView(lng = -27.5097656, lat = 29.0801758, zoom = 1)
     
   })
+
+  # ---------------------------------------
+  # TAB VIDEOS OUTPUT
+  # --------------------------------------- 
+  # Total videos
+  output$valueBoxTotalVideos <- renderValueBox({
+    d<-dates()
+    # Connect to postgres
+    con <- psql(psql_host(), psql_port(), psql_user(), psql_pwd(), psql_db())
+    # calculate total students
+    TV <- totalVideos(con)
+    # Close connection
+    dbDisconnect(con$con)
+    # Valuebox
+    valueBox(
+      TV, "Total videos", icon = icon("video-camera"), color = "purple"
+    )
+  })
+  
   
   # ---------------------------------------
   # TAB GRADED QUIZZES OUTPUT
