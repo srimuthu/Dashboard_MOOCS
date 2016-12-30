@@ -409,6 +409,50 @@ function(input, output, session) {
     )
   })
   
+  # Create a drop-down list for available videos
+  output$tabVideosSelectVideo <- renderUI({
+    # Get dates
+    d<-dates()
+    # Connect to postgres
+    con <- psql(psql_host(), psql_port(), psql_user(), psql_pwd(), psql_db())
+    # Retrieve tests
+    t <- retrieveVideosList(con, from = d[1], to = d[2]) 
+    # Close connection
+    dbDisconnect(con$con)
+    # Add selectize input
+    selectInput("videosSelectVideo", "Select a video:", 
+                choices = unique(t$course_item_name), selected = 1, width = "75%")
+  }) 
+  
+  # Completers per video
+  output$valueBoxCompletersPerVideo <- renderValueBox({
+    d<-dates()
+    # Get dates
+    d<-dates()
+    # Connect to postgres
+    con <- psql(psql_host(), psql_port(), psql_user(), psql_pwd(), psql_db())
+    # Retrieve tests
+    t <- retrieveVideosList(con, from = d[1], to = d[2]) 
+    # Close connection
+    dbDisconnect(con$con)
+    # If video is selected, filter completers by video
+    if(!is.null(input$videosSelectVideo)){
+      t <- t %>%
+        filter(course_item_name == input$videosSelectVideo,
+               course_progress_state_type_id == 2) %>%
+        summarize(n()) %>%
+        collect()
+      
+    }
+    else
+    {
+      t <- NULL
+    }
+    valueBox(
+      t, "Completers", icon = icon("user-circle-o"), color = "purple"
+    )
+        
+  })
   
   # ---------------------------------------
   # TAB GRADED QUIZZES OUTPUT

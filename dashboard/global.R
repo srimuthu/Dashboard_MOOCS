@@ -33,6 +33,7 @@ source("functions/geography/countryOfOrigin.R")
 # -------------------------------
 
 source("functions/videos/totalVideos.R")
+source("functions/videos/retrieveVideosList.R")
 
 # -------------------------------
 # TAB FORUM HELPER FUNCTIONS

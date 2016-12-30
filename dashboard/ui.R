@@ -137,10 +137,40 @@ body <- dashboardBody(
             ),
     #Videos
     tabItem(tabName = "videos",
-            fluidRow(
-              valueBoxOutput("valueBoxTotalVideos")
-            )
             
+            fluidRow(
+              tabBox(
+                title = tagList(shiny::icon("video-camera"), "Videos browser"),
+                id = "videosTabSet1", height = "250px", width = 12,
+                tabPanel("Overall",
+                         fluidRow(
+                           column(
+                             width = 3,
+                             valueBoxOutput("valueBoxTotalVideos", width = NULL)
+                           )
+                         )
+                         ),
+                tabPanel("By video",
+                         fluidRow(  
+                           column(
+                             width = 6,
+                             box(
+                               title = "Video options",
+                               width = NULL,
+                               uiOutput("tabVideosSelectVideo")
+                             ) 
+                           ),
+                           column(
+                             width = 3,
+                             valueBoxOutput("valueBoxCompletersPerVideo", width = NULL)
+                           )
+                         )
+                         )
+                
+              )
+              
+            )
+
             ),
     
     # Graded quizzes
