@@ -34,6 +34,7 @@ source("functions/geography/countryOfOrigin.R")
 
 source("functions/videos/totalVideos.R")
 source("functions/videos/retrieveVideosList.R")
+source("functions/videos/completersPerVideo.R")
 
 # -------------------------------
 # TAB FORUM HELPER FUNCTIONS

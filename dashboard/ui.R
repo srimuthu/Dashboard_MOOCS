@@ -141,12 +141,22 @@ body <- dashboardBody(
             fluidRow(
               tabBox(
                 title = tagList(shiny::icon("video-camera"), "Videos browser"),
-                id = "videosTabSet1", height = "250px", width = 12,
+                id = "videosTabSet1", height = "500px", width = 12,
                 tabPanel("Overall",
                          fluidRow(
                            column(
                              width = 3,
                              valueBoxOutput("valueBoxTotalVideos", width = NULL)
+                           )
+                         ),
+                         fluidRow(
+                           column(
+                             width = 12,
+                             box(
+                               width = NULL,
+                               title = "Completers per video",
+                               plotlyOutput("tabVideosCompletersGraph")
+                             )
                            )
                          )
                          ),
@@ -166,11 +176,8 @@ body <- dashboardBody(
                            )
                          )
                          )
-                
               )
-              
             )
-
             ),
     
     # Graded quizzes

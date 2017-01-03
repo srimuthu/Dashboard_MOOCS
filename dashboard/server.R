@@ -426,7 +426,23 @@ function(input, output, session) {
   
   # Completers per video
   output$valueBoxCompletersPerVideo <- renderValueBox({
+    # Get dates
     d<-dates()
+    # Connect to postgres
+    con <- psql(psql_host(), psql_port(), psql_user(), psql_pwd(), psql_db())
+    # Retrieve completers for the video
+    t <- completersPerVideo(con, eval(input$videosSelectVideo), from = d[1], to = d[2]) 
+    # Close connection
+    dbDisconnect(con$con)
+  
+    valueBox(
+      t, "Completers", icon = icon("user-circle-o"), color = "purple"
+    )
+        
+  })
+  
+  # Completers per video graph
+  output$tabVideosCompletersGraph <- renderPlotly({
     # Get dates
     d<-dates()
     # Connect to postgres
@@ -435,23 +451,28 @@ function(input, output, session) {
     t <- retrieveVideosList(con, from = d[1], to = d[2]) 
     # Close connection
     dbDisconnect(con$con)
-    # If video is selected, filter completers by video
-    if(!is.null(input$videosSelectVideo)){
-      t <- t %>%
-        filter(course_item_name == input$videosSelectVideo,
-               course_progress_state_type_id == 2) %>%
-        summarize(n()) %>%
-        collect()
-      
-    }
-    else
-    {
-      t <- NULL
-    }
-    valueBox(
-      t, "Completers", icon = icon("user-circle-o"), color = "purple"
-    )
-        
+    # List of unique videos
+    vl <- unique(t$course_item_name)
+    # Filter the data and compile into a data frame
+    t <- t %>%
+      filter(course_progress_state_type_id == 2) %>%
+      select(course_item_name)
+    cv <- table(t)
+    CPV <- as.data.frame(cv)  
+    
+    # Plot
+    p <- ggplot(CPV, aes(x = t, 
+                        y = Freq)) +
+      geom_bar(stat= "identity") +
+      theme_cfi_scientific() +
+      scale_fill_manual(values = CFI_palette(),
+                        guide = guide_legend(reverse = TRUE)) +
+      scale_x_discrete(name = "",
+                       expand = c(0.01,0))  +
+      scale_y_continuous(expand = c(0.01,0))
+    # Plotly
+    ggplotly(p)
+
   })
   
   # ---------------------------------------
