@@ -15,6 +15,8 @@ library(plotly)
 library(scales)
 library(purrr)
 
+course_list <- jsonlite::fromJSON("settings/course_list.json")
+
 # Shiny server
 function(input, output, session) {
   
@@ -190,7 +192,108 @@ function(input, output, session) {
     # Plotly
     ggplotly(p)
   })
-
+  
+  # Comparison output
+  
+  output$comparisonEnrolledCourse1 <- renderText({
+    con <- src_sqlite("data/summary_stats.sqlite")
+    cn <- names(which(course_list == input$tabOverviewCompareCourse1))
+    cec <- tbl(con, "summary_stats") %>%
+      select(course, new_enrolments) %>%
+      filter(course == cn) %>%
+      collect()
+    dbDisconnect(con$con)
+    paste(cec$new_enrolments)
+  })
+  
+  output$comparisonEnrolledCourse2 <- renderText({
+    con <- src_sqlite("data/summary_stats.sqlite")
+    cn <- names(which(course_list == input$tabOverviewCompareCourse2))
+    cec <- tbl(con, "summary_stats") %>%
+      select(course, new_enrolments) %>%
+      filter(course == cn) %>%
+      collect()
+    dbDisconnect(con$con)
+    paste(cec$new_enrolments)
+  })
+  
+  output$comparisonEnrolledCourse3 <- renderText({
+    con <- src_sqlite("data/summary_stats.sqlite")
+    cn <- names(which(course_list == input$tabOverviewCompareCourse3))
+    cec <- tbl(con, "summary_stats") %>%
+      select(course, new_enrolments) %>%
+      filter(course == cn) %>%
+      collect()
+    dbDisconnect(con$con)
+    paste(cec$new_enrolments)
+  })
+  
+  
+  output$comparisonActiveCourse1 <- renderText({
+    con <- src_sqlite("data/summary_stats.sqlite")
+    cn <- names(which(course_list == input$tabOverviewCompareCourse1))
+    cac <- tbl(con, "summary_stats") %>%
+      select(course, active_students) %>%
+      filter(course == cn) %>%
+      collect()
+    dbDisconnect(con$con)
+    paste(cac$active_students)
+  })
+  
+  output$comparisonActiveCourse2 <- renderText({
+    con <- src_sqlite("data/summary_stats.sqlite")
+    cn <- names(which(course_list == input$tabOverviewCompareCourse2))
+    cac <- tbl(con, "summary_stats") %>%
+      select(course, active_students) %>%
+      filter(course == cn) %>%
+      collect()
+    dbDisconnect(con$con)
+    paste(cac$active_students)
+  })
+  
+  output$comparisonActiveCourse3 <- renderText({
+    con <- src_sqlite("data/summary_stats.sqlite")
+    cn <- names(which(course_list == input$tabOverviewCompareCourse3))
+    cac <- tbl(con, "summary_stats") %>%
+      select(course, active_students) %>%
+      filter(course == cn) %>%
+      collect()
+    dbDisconnect(con$con)
+    paste(cac$active_students)
+  })
+  
+  output$comparisonCompCourse1 <- renderText({
+    con <- src_sqlite("data/summary_stats.sqlite")
+    cn <- names(which(course_list == input$tabOverviewCompareCourse1))
+    cc <- tbl(con, "summary_stats") %>%
+      select(course, course_completers) %>%
+      filter(course == cn) %>%
+      collect()
+    dbDisconnect(con$con)
+    paste(cc$course_completers)
+  })
+  
+  output$comparisonCompCourse2 <- renderText({
+    con <- src_sqlite("data/summary_stats.sqlite")
+    cn <- names(which(course_list == input$tabOverviewCompareCourse2))
+    cc <- tbl(con, "summary_stats") %>%
+      select(course, course_completers) %>%
+      filter(course == cn) %>%
+      collect()
+    dbDisconnect(con$con)
+    paste(cc$course_completers)
+  })
+  
+  output$comparisonCompCourse3 <- renderText({
+    con <- src_sqlite("data/summary_stats.sqlite")
+    cn <- names(which(course_list == input$tabOverviewCompareCourse3))
+    cc <- tbl(con, "summary_stats") %>%
+      select(course, course_completers) %>%
+      filter(course == cn) %>%
+      collect()
+    dbDisconnect(con$con)
+    paste(cc$course_completers)
+  })
   # ---------------------------------------
   # TAB DASHBOARD OUTPUT
   # ---------------------------------------  
@@ -451,8 +554,6 @@ function(input, output, session) {
     t <- retrieveVideosList(con, from = d[1], to = d[2]) 
     # Close connection
     dbDisconnect(con$con)
-    # List of unique videos
-    vl <- unique(t$course_item_name)
     # Filter the data and compile into a data frame
     t <- t %>%
       filter(course_progress_state_type_id == 2) %>%
@@ -460,9 +561,13 @@ function(input, output, session) {
     cv <- table(t)
     CPV <- as.data.frame(cv)  
     
+    # Rename columns
+    colnames(CPV)[colnames(CPV)=="t"] <- "Video"
+    colnames(CPV)[colnames(CPV)=="Freq"] <- "Completers"
+    
     # Plot
-    p <- ggplot(CPV, aes(x = t, 
-                        y = Freq)) +
+    p <- ggplot(CPV, aes(x = Video, 
+                        y = Completers)) +
       geom_bar(stat= "identity") +
       theme_cfi_scientific() +
       scale_fill_manual(values = CFI_palette(),

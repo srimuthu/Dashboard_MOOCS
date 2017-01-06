@@ -66,31 +66,120 @@ body <- dashboardBody(
   tabItems(
     #EIT Overview
     tabItem(tabName = "coursesoverview",
+            
             fluidRow(
-              valueBoxOutput("valueBoxSummaryTotalStudents"),
-              valueBoxOutput("valueBoxSummaryCompleted"),
-              valueBoxOutput("valueBoxSummaryPayments")
-            ),
-            fluidRow(
-              column(
-                width = 6,
-                box(
-                  width = NULL,
-                  title = "Conversion rate",
-                  p("The conversion rate is calculated by dividing the number of paying students by the total number of enrolled students."),
-                  plotlyOutput("chartSummaryConversion", height = "300px")
-                )
-              ),
-              column(
-                width = 6,
-                box(
-                  width = NULL,
-                  title = "Graduation percentage",
-                  p("The graduation percentage is calculated by dividing the number of students who have finished the course by the total number of enrolled students."),
-                  plotlyOutput("chartSummaryGraduation", height = "300px")
-                )
+              tabBox(
+                title = tagList(shiny::icon("tasks"), "Courses Overview"),
+                id = "overviewTabSet1", height = "500px", width = 12,
+                tabPanel("Statistics",
+            
+                  fluidRow(
+                    valueBoxOutput("valueBoxSummaryTotalStudents"),
+                    valueBoxOutput("valueBoxSummaryCompleted"),
+                    valueBoxOutput("valueBoxSummaryPayments")
+                  ),
+                  fluidRow(
+                    column(
+                      width = 6,
+                      box(
+                        width = NULL,
+                        title = "Conversion rate",
+                        p("The conversion rate is calculated by dividing the number of paying students by the total number of enrolled students."),
+                        plotlyOutput("chartSummaryConversion", height = "300px")
+                      )
+                    ),
+                    column(
+                      width = 6,
+                      box(
+                        width = NULL,
+                        title = "Graduation percentage",
+                        p("The graduation percentage is calculated by dividing the number of students who have finished the course by the total number of enrolled students."),
+                        plotlyOutput("chartSummaryGraduation", height = "300px")
+                      )
+                    )
+                  )
+                ),
+              tabPanel("Compare",
+                       
+                       fluidRow(
+                         column(
+                           width = 3,
+                           h3("Comparison Criteria")
+                         ),
+                         column(
+                           width = 3,
+                           selectInput("tabOverviewCompareCourse1", label = h3("Select Course 1"), 
+                                       choices = course_list, selected = "")
+                         ),
+                         column(
+                           width = 3,
+                           selectInput("tabOverviewCompareCourse2", label = h3("Select Course 2"), 
+                                       choices = course_list, selected = "")
+                         ),
+                         column(
+                           width = 3,
+                           selectInput("tabOverviewCompareCourse3", label = h3("Select Course 3"), 
+                                       choices = course_list, selected = "")
+                         )
+                       ),
+                       
+                       fluidRow(
+                         column(
+                           width = 3,
+                           h4("Enrolled Students")
+                         ),
+                         column(
+                           width = 3,
+                           h4(textOutput("comparisonEnrolledCourse1"))
+                         ),
+                         column(
+                           width = 3,
+                           h4(textOutput("comparisonEnrolledCourse2"))
+                         ),
+                         column(
+                           width = 3,
+                           h4(textOutput("comparisonEnrolledCourse3"))
+                         )
+                       ),
+                       fluidRow(
+                         column(
+                           width = 3,
+                           h4("Active Students")
+                         ),
+                         column(
+                           width = 3,
+                           h4(textOutput("comparisonActiveCourse1"))
+                         ),
+                         column(
+                           width = 3,
+                           h4(textOutput("comparisonActiveCourse2"))
+                         ),
+                         column(
+                           width = 3,
+                           h4(textOutput("comparisonActiveCourse3"))
+                         )
+                       ),
+                       fluidRow(
+                         column(
+                           width = 3,
+                           h4("Completers")
+                         ),
+                         column(
+                           width = 3,
+                           h4(textOutput("comparisonCompCourse1"))
+                         ),
+                         column(
+                           width = 3,
+                           h4(textOutput("comparisonCompCourse2"))
+                         ),
+                         column(
+                           width = 3,
+                           h4(textOutput("comparisonCompCourse3"))
+                         )
+                       )
+                    )
               )
-            )
+              )
             ),
     #Dashboard
     tabItem(tabName = "dashboard",
