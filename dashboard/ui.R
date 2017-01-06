@@ -126,55 +126,19 @@ body <- dashboardBody(
                        fluidRow(
                          column(
                            width = 3,
-                           h4("Enrolled Students")
+                           uiOutput("comparisonText")
                          ),
                          column(
                            width = 3,
-                           h4(textOutput("comparisonEnrolledCourse1"))
+                           uiOutput("comparisonCourse1")
                          ),
                          column(
                            width = 3,
-                           h4(textOutput("comparisonEnrolledCourse2"))
+                           uiOutput("comparisonCourse2")
                          ),
                          column(
                            width = 3,
-                           h4(textOutput("comparisonEnrolledCourse3"))
-                         )
-                       ),
-                       fluidRow(
-                         column(
-                           width = 3,
-                           h4("Active Students")
-                         ),
-                         column(
-                           width = 3,
-                           h4(textOutput("comparisonActiveCourse1"))
-                         ),
-                         column(
-                           width = 3,
-                           h4(textOutput("comparisonActiveCourse2"))
-                         ),
-                         column(
-                           width = 3,
-                           h4(textOutput("comparisonActiveCourse3"))
-                         )
-                       ),
-                       fluidRow(
-                         column(
-                           width = 3,
-                           h4("Completers")
-                         ),
-                         column(
-                           width = 3,
-                           h4(textOutput("comparisonCompCourse1"))
-                         ),
-                         column(
-                           width = 3,
-                           h4(textOutput("comparisonCompCourse2"))
-                         ),
-                         column(
-                           width = 3,
-                           h4(textOutput("comparisonCompCourse3"))
+                           uiOutput("comparisonCourse3")
                          )
                        )
                     )

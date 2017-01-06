@@ -193,107 +193,151 @@ function(input, output, session) {
     ggplotly(p)
   })
   
-  # Comparison output
   
-  output$comparisonEnrolledCourse1 <- renderText({
-    con <- src_sqlite("data/summary_stats.sqlite")
-    cn <- names(which(course_list == input$tabOverviewCompareCourse1))
-    cec <- tbl(con, "summary_stats") %>%
-      select(course, new_enrolments) %>%
-      filter(course == cn) %>%
-      collect()
-    dbDisconnect(con$con)
-    paste(cec$new_enrolments)
+  # Comparison output - Dynamically create outputs
+  
+  num_outputs <- 6
+  output$comparisonText <- renderUI({
+    compOutputText <- lapply(1:num_outputs, function(i) {
+      textName <- paste("compText", i, sep="")
+      h3(textOutput(textName))
+    })
+    
+    # Convert the list to a tagList
+    do.call(tagList, compOutputText)
   })
   
-  output$comparisonEnrolledCourse2 <- renderText({
-    con <- src_sqlite("data/summary_stats.sqlite")
-    cn <- names(which(course_list == input$tabOverviewCompareCourse2))
-    cec <- tbl(con, "summary_stats") %>%
-      select(course, new_enrolments) %>%
-      filter(course == cn) %>%
-      collect()
-    dbDisconnect(con$con)
-    paste(cec$new_enrolments)
+  output$comparisonCourse1 <- renderUI({
+    compOutputC1 <- lapply(1:num_outputs, function(i) {
+      textName <- paste("compOutputC1text", i, sep="")
+      h3(textOutput(textName))
+    })
+    
+    # Convert the list to a tagList
+    do.call(tagList, compOutputC1)
   })
   
-  output$comparisonEnrolledCourse3 <- renderText({
-    con <- src_sqlite("data/summary_stats.sqlite")
-    cn <- names(which(course_list == input$tabOverviewCompareCourse3))
-    cec <- tbl(con, "summary_stats") %>%
-      select(course, new_enrolments) %>%
-      filter(course == cn) %>%
-      collect()
-    dbDisconnect(con$con)
-    paste(cec$new_enrolments)
+  output$comparisonCourse2 <- renderUI({
+    compOutputC2 <- lapply(1:num_outputs, function(i) {
+      textName <- paste("compOutputC2text", i, sep="")
+      h3(textOutput(textName))
+    })
+    
+    # Convert the list to a tagList
+    do.call(tagList, compOutputC2)
+  })
+  
+  output$comparisonCourse3 <- renderUI({
+    compOutputC3 <- lapply(1:num_outputs, function(i) {
+      textName <- paste("compOutputC3text", i, sep="")
+      h3(textOutput(textName))
+    })
+    
+    # Convert the list to a tagList
+    do.call(tagList, compOutputC3)
   })
   
   
-  output$comparisonActiveCourse1 <- renderText({
-    con <- src_sqlite("data/summary_stats.sqlite")
-    cn <- names(which(course_list == input$tabOverviewCompareCourse1))
-    cac <- tbl(con, "summary_stats") %>%
-      select(course, active_students) %>%
-      filter(course == cn) %>%
-      collect()
-    dbDisconnect(con$con)
-    paste(cac$active_students)
-  })
   
-  output$comparisonActiveCourse2 <- renderText({
-    con <- src_sqlite("data/summary_stats.sqlite")
-    cn <- names(which(course_list == input$tabOverviewCompareCourse2))
-    cac <- tbl(con, "summary_stats") %>%
-      select(course, active_students) %>%
-      filter(course == cn) %>%
-      collect()
-    dbDisconnect(con$con)
-    paste(cac$active_students)
-  })
+  # Call renderText for each one
+  for(i in 1:num_outputs){
+    local({
+      this_i <- i
+      textName <- paste("compText",this_i,sep="")
+      
+      output[[textName]] <- renderText({
+        op <- switch(
+          this_i,
+          "Enrolled Students",
+          "Active Students",
+          "Completers",
+          "Viewers",
+          "Payments",
+          "Financial aid"
+        )
+        paste(op)
+      })
+    })
+  }
   
-  output$comparisonActiveCourse3 <- renderText({
-    con <- src_sqlite("data/summary_stats.sqlite")
-    cn <- names(which(course_list == input$tabOverviewCompareCourse3))
-    cac <- tbl(con, "summary_stats") %>%
-      select(course, active_students) %>%
-      filter(course == cn) %>%
-      collect()
-    dbDisconnect(con$con)
-    paste(cac$active_students)
-  })
+  for(i in 1:num_outputs){
+    local({
+      this_i <- i
+      textName <- paste("compOutputC1text",this_i,sep="")
+      
+      output[[textName]] <- renderText({
+        con <- src_sqlite("data/summary_stats.sqlite")
+        cn <- names(which(course_list == input$tabOverviewCompareCourse1))
+        cec <- tbl(con, "summary_stats") %>%
+          filter(course == cn) %>%
+          collect()
+        dbDisconnect(con$con)
+        op <- switch(
+          this_i,
+          cec$new_enrolments,
+          cec$active_students,
+          cec$course_completers,
+          cec$viewing_students,
+          cec$payments,
+          cec$financial_aid
+        )
+        paste(op)
+      })
+    })
+  }
   
-  output$comparisonCompCourse1 <- renderText({
-    con <- src_sqlite("data/summary_stats.sqlite")
-    cn <- names(which(course_list == input$tabOverviewCompareCourse1))
-    cc <- tbl(con, "summary_stats") %>%
-      select(course, course_completers) %>%
-      filter(course == cn) %>%
-      collect()
-    dbDisconnect(con$con)
-    paste(cc$course_completers)
-  })
+  for(i in 1:num_outputs){
+    local({
+      this_i <- i
+      textName <- paste("compOutputC2text",this_i,sep="")
+      
+      output[[textName]] <- renderText({
+        con <- src_sqlite("data/summary_stats.sqlite")
+        cn <- names(which(course_list == input$tabOverviewCompareCourse2))
+        cec <- tbl(con, "summary_stats") %>%
+          filter(course == cn) %>%
+          collect()
+        dbDisconnect(con$con)
+        op <- switch(
+          this_i,
+          cec$new_enrolments,
+          cec$active_students,
+          cec$course_completers,
+          cec$viewing_students,
+          cec$payments,
+          cec$financial_aid
+        )
+        paste(op)
+      })
+    })
+  }
   
-  output$comparisonCompCourse2 <- renderText({
-    con <- src_sqlite("data/summary_stats.sqlite")
-    cn <- names(which(course_list == input$tabOverviewCompareCourse2))
-    cc <- tbl(con, "summary_stats") %>%
-      select(course, course_completers) %>%
-      filter(course == cn) %>%
-      collect()
-    dbDisconnect(con$con)
-    paste(cc$course_completers)
-  })
-  
-  output$comparisonCompCourse3 <- renderText({
-    con <- src_sqlite("data/summary_stats.sqlite")
-    cn <- names(which(course_list == input$tabOverviewCompareCourse3))
-    cc <- tbl(con, "summary_stats") %>%
-      select(course, course_completers) %>%
-      filter(course == cn) %>%
-      collect()
-    dbDisconnect(con$con)
-    paste(cc$course_completers)
-  })
+  for(i in 1:num_outputs){
+    local({
+      this_i <- i
+      textName <- paste("compOutputC3text",this_i,sep="")
+      
+      output[[textName]] <- renderText({
+        con <- src_sqlite("data/summary_stats.sqlite")
+        cn <- names(which(course_list == input$tabOverviewCompareCourse3))
+        cec <- tbl(con, "summary_stats") %>%
+          filter(course == cn) %>%
+          collect()
+        dbDisconnect(con$con)
+        op <- switch(
+          this_i,
+          cec$new_enrolments,
+          cec$active_students,
+          cec$course_completers,
+          cec$viewing_students,
+          cec$payments,
+          cec$financial_aid
+        )
+        paste(op)
+      })
+    })
+  }
+
   # ---------------------------------------
   # TAB DASHBOARD OUTPUT
   # ---------------------------------------  
