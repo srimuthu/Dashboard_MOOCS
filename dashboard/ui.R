@@ -31,6 +31,7 @@ sidebar <-   dashboardSidebar(
     menuItem("Overview", tabName = "coursesoverview"), 
     menuItem("Dashboard", tabName = "dashboard"),
     menuItem("Geography", tabName = "geography"),
+    menuItem("Videos", tabName = "videos"),
     menuItem("Graded quizzes", tabName = "gradedquizzes"),
     menuItem("Forum", tabName = "forum"),
     menuItem("Settings", tabName = "settings"),
@@ -65,31 +66,84 @@ body <- dashboardBody(
   tabItems(
     #EIT Overview
     tabItem(tabName = "coursesoverview",
+            
             fluidRow(
-              valueBoxOutput("valueBoxSummaryTotalStudents"),
-              valueBoxOutput("valueBoxSummaryCompleted"),
-              valueBoxOutput("valueBoxSummaryPayments")
-            ),
-            fluidRow(
-              column(
-                width = 6,
-                box(
-                  width = NULL,
-                  title = "Conversion rate",
-                  p("The conversion rate is calculated by dividing the number of paying students by the total number of enrolled students."),
-                  plotlyOutput("chartSummaryConversion", height = "300px")
-                )
-              ),
-              column(
-                width = 6,
-                box(
-                  width = NULL,
-                  title = "Graduation percentage",
-                  p("The graduation percentage is calculated by dividing the number of students who have finished the course by the total number of enrolled students."),
-                  plotlyOutput("chartSummaryGraduation", height = "300px")
-                )
+              tabBox(
+                title = tagList(shiny::icon("tasks"), "Courses Overview"),
+                id = "overviewTabSet1", height = "500px", width = 12,
+                tabPanel("Statistics",
+            
+                  fluidRow(
+                    valueBoxOutput("valueBoxSummaryTotalStudents"),
+                    valueBoxOutput("valueBoxSummaryCompleted"),
+                    valueBoxOutput("valueBoxSummaryPayments")
+                  ),
+                  fluidRow(
+                    column(
+                      width = 6,
+                      box(
+                        width = NULL,
+                        title = "Conversion rate",
+                        p("The conversion rate is calculated by dividing the number of paying students by the total number of enrolled students."),
+                        plotlyOutput("chartSummaryConversion", height = "300px")
+                      )
+                    ),
+                    column(
+                      width = 6,
+                      box(
+                        width = NULL,
+                        title = "Graduation percentage",
+                        p("The graduation percentage is calculated by dividing the number of students who have finished the course by the total number of enrolled students."),
+                        plotlyOutput("chartSummaryGraduation", height = "300px")
+                      )
+                    )
+                  )
+                ),
+              tabPanel("Compare",
+                       
+                       fluidRow(
+                         column(
+                           width = 3,
+                           h3("Comparison Criteria")
+                         ),
+                         column(
+                           width = 3,
+                           selectInput("tabOverviewCompareCourse1", label = h3("Select Course 1"), 
+                                       choices = course_list, selected = "")
+                         ),
+                         column(
+                           width = 3,
+                           selectInput("tabOverviewCompareCourse2", label = h3("Select Course 2"), 
+                                       choices = course_list, selected = "")
+                         ),
+                         column(
+                           width = 3,
+                           selectInput("tabOverviewCompareCourse3", label = h3("Select Course 3"), 
+                                       choices = course_list, selected = "")
+                         )
+                       ),
+                       
+                       fluidRow(
+                         column(
+                           width = 3,
+                           uiOutput("comparisonText")
+                         ),
+                         column(
+                           width = 3,
+                           uiOutput("comparisonCourse1")
+                         ),
+                         column(
+                           width = 3,
+                           uiOutput("comparisonCourse2")
+                         ),
+                         column(
+                           width = 3,
+                           uiOutput("comparisonCourse3")
+                         )
+                       )
+                    )
               )
-            )
+              )
             ),
     #Dashboard
     tabItem(tabName = "dashboard",
@@ -134,6 +188,51 @@ body <- dashboardBody(
             )
 
             ),
+    #Videos
+    tabItem(tabName = "videos",
+            
+            fluidRow(
+              tabBox(
+                title = tagList(shiny::icon("video-camera"), "Videos browser"),
+                id = "videosTabSet1", height = "500px", width = 12,
+                tabPanel("Overall",
+                         fluidRow(
+                           column(
+                             width = 3,
+                             valueBoxOutput("valueBoxTotalVideos", width = NULL)
+                           )
+                         ),
+                         fluidRow(
+                           column(
+                             width = 12,
+                             box(
+                               width = NULL,
+                               title = "Completers per video",
+                               plotlyOutput("tabVideosCompletersGraph")
+                             )
+                           )
+                         )
+                         ),
+                tabPanel("By video",
+                         fluidRow(  
+                           column(
+                             width = 6,
+                             box(
+                               title = "Video options",
+                               width = NULL,
+                               uiOutput("tabVideosSelectVideo")
+                             ) 
+                           ),
+                           column(
+                             width = 3,
+                             valueBoxOutput("valueBoxCompletersPerVideo", width = NULL)
+                           )
+                         )
+                         )
+              )
+            )
+            ),
+    
     # Graded quizzes
     tabItem(tabName = "gradedquizzes",
             fluidRow(

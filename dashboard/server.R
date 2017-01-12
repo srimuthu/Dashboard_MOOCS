@@ -15,6 +15,8 @@ library(plotly)
 library(scales)
 library(purrr)
 
+course_list <- jsonlite::fromJSON("settings/course_list.json")
+
 # Shiny server
 function(input, output, session) {
   
@@ -190,6 +192,151 @@ function(input, output, session) {
     # Plotly
     ggplotly(p)
   })
+  
+  
+  # Comparison output - Dynamically create outputs
+  
+  num_outputs <- 6
+  output$comparisonText <- renderUI({
+    compOutputText <- lapply(1:num_outputs, function(i) {
+      textName <- paste("compText", i, sep="")
+      h3(textOutput(textName))
+    })
+    
+    # Convert the list to a tagList
+    do.call(tagList, compOutputText)
+  })
+  
+  output$comparisonCourse1 <- renderUI({
+    compOutputC1 <- lapply(1:num_outputs, function(i) {
+      textName <- paste("compOutputC1text", i, sep="")
+      h3(textOutput(textName))
+    })
+    
+    # Convert the list to a tagList
+    do.call(tagList, compOutputC1)
+  })
+  
+  output$comparisonCourse2 <- renderUI({
+    compOutputC2 <- lapply(1:num_outputs, function(i) {
+      textName <- paste("compOutputC2text", i, sep="")
+      h3(textOutput(textName))
+    })
+    
+    # Convert the list to a tagList
+    do.call(tagList, compOutputC2)
+  })
+  
+  output$comparisonCourse3 <- renderUI({
+    compOutputC3 <- lapply(1:num_outputs, function(i) {
+      textName <- paste("compOutputC3text", i, sep="")
+      h3(textOutput(textName))
+    })
+    
+    # Convert the list to a tagList
+    do.call(tagList, compOutputC3)
+  })
+  
+  
+  
+  # Call renderText for each one
+  for(i in 1:num_outputs){
+    local({
+      this_i <- i
+      textName <- paste("compText",this_i,sep="")
+      
+      output[[textName]] <- renderText({
+        op <- switch(
+          this_i,
+          "Enrolled Students",
+          "Active Students",
+          "Completers",
+          "Viewers",
+          "Payments",
+          "Financial aid"
+        )
+        paste(op)
+      })
+    })
+  }
+  
+  for(i in 1:num_outputs){
+    local({
+      this_i <- i
+      textName <- paste("compOutputC1text",this_i,sep="")
+      
+      output[[textName]] <- renderText({
+        con <- src_sqlite("data/summary_stats.sqlite")
+        cn <- names(which(course_list == input$tabOverviewCompareCourse1))
+        cec <- tbl(con, "summary_stats") %>%
+          filter(course == cn) %>%
+          collect()
+        dbDisconnect(con$con)
+        op <- switch(
+          this_i,
+          cec$new_enrolments,
+          cec$active_students,
+          cec$course_completers,
+          cec$viewing_students,
+          cec$payments,
+          cec$financial_aid
+        )
+        paste(op)
+      })
+    })
+  }
+  
+  for(i in 1:num_outputs){
+    local({
+      this_i <- i
+      textName <- paste("compOutputC2text",this_i,sep="")
+      
+      output[[textName]] <- renderText({
+        con <- src_sqlite("data/summary_stats.sqlite")
+        cn <- names(which(course_list == input$tabOverviewCompareCourse2))
+        cec <- tbl(con, "summary_stats") %>%
+          filter(course == cn) %>%
+          collect()
+        dbDisconnect(con$con)
+        op <- switch(
+          this_i,
+          cec$new_enrolments,
+          cec$active_students,
+          cec$course_completers,
+          cec$viewing_students,
+          cec$payments,
+          cec$financial_aid
+        )
+        paste(op)
+      })
+    })
+  }
+  
+  for(i in 1:num_outputs){
+    local({
+      this_i <- i
+      textName <- paste("compOutputC3text",this_i,sep="")
+      
+      output[[textName]] <- renderText({
+        con <- src_sqlite("data/summary_stats.sqlite")
+        cn <- names(which(course_list == input$tabOverviewCompareCourse3))
+        cec <- tbl(con, "summary_stats") %>%
+          filter(course == cn) %>%
+          collect()
+        dbDisconnect(con$con)
+        op <- switch(
+          this_i,
+          cec$new_enrolments,
+          cec$active_students,
+          cec$course_completers,
+          cec$viewing_students,
+          cec$payments,
+          cec$financial_aid
+        )
+        paste(op)
+      })
+    })
+  }
 
   # ---------------------------------------
   # TAB DASHBOARD OUTPUT
@@ -389,6 +536,92 @@ function(input, output, session) {
       # Set view on europe
       setView(lng = -27.5097656, lat = 29.0801758, zoom = 1)
     
+  })
+
+  # ---------------------------------------
+  # TAB VIDEOS OUTPUT
+  # --------------------------------------- 
+  # Total videos
+  output$valueBoxTotalVideos <- renderValueBox({
+    d<-dates()
+    # Connect to postgres
+    con <- psql(psql_host(), psql_port(), psql_user(), psql_pwd(), psql_db())
+    # calculate total students
+    TV <- totalVideos(con)
+    # Close connection
+    dbDisconnect(con$con)
+    # Valuebox
+    valueBox(
+      TV, "Total videos", icon = icon("video-camera"), color = "purple"
+    )
+  })
+  
+  # Create a drop-down list for available videos
+  output$tabVideosSelectVideo <- renderUI({
+    # Get dates
+    d<-dates()
+    # Connect to postgres
+    con <- psql(psql_host(), psql_port(), psql_user(), psql_pwd(), psql_db())
+    # Retrieve tests
+    t <- retrieveVideosList(con, from = d[1], to = d[2]) 
+    # Close connection
+    dbDisconnect(con$con)
+    # Add selectize input
+    selectInput("videosSelectVideo", "Select a video:", 
+                choices = unique(t$course_item_name), selected = 1, width = "75%")
+  }) 
+  
+  # Completers per video
+  output$valueBoxCompletersPerVideo <- renderValueBox({
+    # Get dates
+    d<-dates()
+    # Connect to postgres
+    con <- psql(psql_host(), psql_port(), psql_user(), psql_pwd(), psql_db())
+    # Retrieve completers for the video
+    t <- completersPerVideo(con, eval(input$videosSelectVideo), from = d[1], to = d[2]) 
+    # Close connection
+    dbDisconnect(con$con)
+  
+    valueBox(
+      t, "Completers", icon = icon("user-circle-o"), color = "purple"
+    )
+        
+  })
+  
+  # Completers per video graph
+  output$tabVideosCompletersGraph <- renderPlotly({
+    # Get dates
+    d<-dates()
+    # Connect to postgres
+    con <- psql(psql_host(), psql_port(), psql_user(), psql_pwd(), psql_db())
+    # Retrieve tests
+    t <- retrieveVideosList(con, from = d[1], to = d[2]) 
+    # Close connection
+    dbDisconnect(con$con)
+    # Filter the data and compile into a data frame
+    t <- t %>%
+      filter(course_progress_state_type_id == 2) %>%
+      select(course_item_name)
+    cv <- table(t)
+    CPV <- as.data.frame(cv)  
+    
+    # Rename columns
+    colnames(CPV)[colnames(CPV)=="t"] <- "Video"
+    colnames(CPV)[colnames(CPV)=="Freq"] <- "Completers"
+    
+    # Plot
+    p <- ggplot(CPV, aes(x = Video, 
+                        y = Completers)) +
+      geom_bar(stat= "identity") +
+      theme_cfi_scientific() +
+      scale_fill_manual(values = CFI_palette(),
+                        guide = guide_legend(reverse = TRUE)) +
+      scale_x_discrete(name = "",
+                       expand = c(0.01,0))  +
+      scale_y_continuous(expand = c(0.01,0))
+    # Plotly
+    ggplotly(p)
+
   })
   
   # ---------------------------------------

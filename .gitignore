@@ -12,3 +12,7 @@
 /dashboard/.RData
 .Rproj.user
 /dashboard/data/summary_stats.sqlite
+
+# Settings
+/dashboard/settings/course_list.json
+/dashboard/settings/postgres_defaults.json
