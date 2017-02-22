@@ -185,9 +185,9 @@ body <- dashboardBody(
                               selected = "None"),
                   p("You can choose between three pallete mapping options"),
                   selectInput("mapColorSchemeInput", "",
-                              choices = c("Bin",
-                                          "Numeric",
-                                          "Quantiles"),
+                              choices = c("Bin (binning based on value)" = "Bin",
+                                          "Numeric (linear mapping)" = "Numeric",
+                                          "Quantiles (binning using quantiles)" = "Quantiles"),
                               selected = "Bin")
                 )
                 
