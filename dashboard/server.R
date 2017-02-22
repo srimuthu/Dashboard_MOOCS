@@ -14,7 +14,7 @@ library(ggplot2)
 library(plotly)
 library(scales)
 library(purrr)
-
+library(DBI)
 course_list <- jsonlite::fromJSON("settings/course_list.json")
 
 # Shiny server
@@ -466,6 +466,8 @@ function(input, output, session) {
     d<-dates()
     # Get map settings input
     msi <- input$mapSettingsInput
+    # Get map color scheme input
+    csi <- input$mapColorSchemeInput
     # Connect to postgres
     con <- psql(psql_host(), psql_port(), psql_user(), psql_pwd(), psql_db())
     # Dataframe with countries of origin
@@ -516,6 +518,7 @@ function(input, output, session) {
       select(n) %>%
       filter(!is.na(n),
              !is.infinite(n))
+    if(csi == "Quantiles"){
     # Create color palette
     pal <- colorQuantile(RColorBrewer::brewer.pal(5, "Blues"), 
                          domain = tmpvalues$n, n=5)
@@ -525,6 +528,15 @@ function(input, output, session) {
         length(unique(quantile(tmpvalues$n))) == 5, "Not enough data to produce unique breaks for quantile values. Please extend the data range."
       )
     )
+    } else if(csi == "Bin"){
+      # Create color palette
+      pal <- colorBin(RColorBrewer::brewer.pal(5, "Blues"), 
+                           domain = tmpvalues$n, n=5)
+    } else if(csi == "Numeric"){
+      # Create color palette
+      pal <- colorNumeric(RColorBrewer::brewer.pal(5, "Blues"), 
+                      domain = tmpvalues$n, n=5)
+    }
     # Create leaflet map
     leaflet(data = countries) %>%
       # Add polygons

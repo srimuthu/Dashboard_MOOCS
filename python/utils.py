@@ -82,7 +82,7 @@ class configParser():
 			abbr = ''
 			for i in idx:
 				abbr = abbr+course[i+1]
-			jsonData[abbr]=course.replace('-','')
+			jsonData[course]=course.replace('-','')
 		
 		#Write the contents to the json file
 		with open(jsonPath, 'wb') as outfile:

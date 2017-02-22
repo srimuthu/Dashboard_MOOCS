@@ -182,8 +182,15 @@ body <- dashboardBody(
                               choices = c("None", 
                                           "Population", 
                                           "Internet users"),
-                              selected = "None")
+                              selected = "None"),
+                  p("You can choose between three pallete mapping options"),
+                  selectInput("mapColorSchemeInput", "",
+                              choices = c("Bin",
+                                          "Numeric",
+                                          "Quantiles"),
+                              selected = "Bin")
                 )
+                
               )
             )
 
