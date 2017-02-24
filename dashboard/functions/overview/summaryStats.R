@@ -15,6 +15,7 @@
 # Libraries
 library(dplyr)
 library(tidyr)
+library(RPostgreSQL)
 
 # Functions
 source("functions/dashboard/totalUsers.R")
@@ -162,3 +163,5 @@ summaryStats <- function(from = "1970-01-01", to = as.character(Sys.Date())) {
   dbDisconnect(sql_con$con)
   
 }
+
+summaryStats()
