@@ -2,27 +2,25 @@
 <settings>
 	
 	<courses>
-		<slug>real-time-systems</slug>
-		<slug>iot-architecture</slug>
-		<slug>quantitative-formal-modeling-1</slug>
-		<slug>design-thinking-entrepreneurs</slug>
-		<slug>open-innovation-entrepreneurship</slug>
-		<slug>impact-of-technology</slug>
-		<slug>automata-system-validation</slug>
-		<slug>iot-devices</slug>
-		<slug>requirements-modal-formulas</slug>
-		<slug>system-validation-behavior</slug>
-		<slug>iot-modeling-software-protocols</slug>
-		<slug>iot-software-architecture</slug>
-		<slug>iot-connectivity-security</slug>
-		<slug>parallelism</slug>
-		<slug>computer-architecture-fundamentals</slug>
-		<slug>embedded-operating-system</slug>
-		<slug>quantitative-model-checking</slug>
+		<slug>human-language</slug>
+		<slug>abdomen-anatomy</slug>
+    <slug>clinical-kidney-transplantation</slug>
+    <slug>comparative-political-economy</slug>
+    <slug>mindfulness</slug>
+    <slug>evolution-today</slug>
+    <slug>decentralization-africa</slug>
+    <slug>international-law-in-action-2</slug>
+    <slug>international-law-in-action</slug>
+    <slug>human-language</slug>
+    <slug>truthinourbones-osteoarchaeology-archaeology</slug>
+    <slug>international-taxation</slug>
+    <slug>terrorism</slug>
+    <slug>roosevelt</slug>
+
 	</courses>
 
-	<datapath>/home/smnbalasubramanian/MOOCS_Dev/Dashboard_MOOCS/data</datapath>
+	<datapath>/home/shiny/coursera-data</datapath>
 
-	<jsonpath>/home/smnbalasubramanian/MOOCS_Dev/Dashboard_MOOCS/dashboard/settings</jsonpath>
+	<jsonpath>/srv/private-server/Dashboard_MOOCS/dashboard/settings</jsonpath>
 
 </settings>

@@ -208,7 +208,7 @@ class coursera:
     Check if download is ready every 10 minutes
     '''
 
-    def status_export(self, interval = 600):
+    def status_export(self, interval = 1800):
 
         # Get status of export download
         request = api.get(self.id_)[0].to_json()
@@ -217,8 +217,8 @@ class coursera:
         time_now = datetime.datetime.now()
         while request['status'] == 'PENDING':
             if self.verbose:
-                print 'API returned {} for job {}. Retrying in 10 seconds.'.format(request['status'], self.course_slug)
-            time.sleep(10)
+                print 'API returned {} for job {}. Retrying in 30 seconds.'.format(request['status'], self.course_slug)
+            time.sleep(30)
             if (datetime.datetime.now() - time_now).total_seconds() >= 600:
                 if self.log:
                     logging.error("API request has been returning status 'PENDING' for 10 minutes. Skipping this request.")

@@ -14,7 +14,9 @@ library(ggplot2)
 library(plotly)
 library(scales)
 library(purrr)
+library(RPostgreSQL)
 library(DBI)
+
 course_list <- jsonlite::fromJSON("settings/course_list.json")
 
 # Shiny server
@@ -149,8 +151,11 @@ function(input, output, session) {
       collect()
     # Disconnect
     dbDisconnect(con$con)
+    # Order data by conversion rate
+    SS$course <- as.factor(SS$course)
+    SS$course <- reorder(SS$course, -SS$conversion)
     # Plot
-    p <- ggplot(SS, aes(x=reorder(course, -conversion), 
+    p <- ggplot(SS, aes(x=course, 
                         y=conversion, label = label, fill = course)) +
       geom_bar(stat= "identity") +
       theme_cfi_scientific() +
@@ -159,7 +164,7 @@ function(input, output, session) {
       scale_x_discrete(name = "",
                        expand = c(0.01,0))  +
       scale_y_continuous(labels=percent,
-                         expand = c(0.01,0))
+                         expand = c(0.01,0)) 
     # Plotly
     ggplotly(p)
   })
@@ -178,8 +183,11 @@ function(input, output, session) {
       collect()
     # Disconnect
     dbDisconnect(con$con)
+    # Factor
+    SS$course <- as.factor(SS$course)
+    SS$course <- reorder(SS$course, -SS$completion)
     # Plot
-    p <- ggplot(SS, aes(x=reorder(course, -completion),
+    p <- ggplot(SS, aes(x=course,
                         y=completion, label = label, fill = course)) +
       geom_bar(stat= "identity") +
       theme_cfi_scientific() +
