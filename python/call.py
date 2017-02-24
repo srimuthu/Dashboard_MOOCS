@@ -79,7 +79,7 @@ def coursera_download(course_slug, request_type, location, store_metadata = True
     # Create cs interval
     c.create_cs_interval(ndays = args.clickstream_days, interval = args.interval)
     # Check if ready for download
-    links = c.status_export(interval = 300)
+    links = c.status_export(interval = 1000)
     # Download data to destination folder
     files_downloaded = 0
     for link in links:
