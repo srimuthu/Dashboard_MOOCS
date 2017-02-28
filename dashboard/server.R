@@ -17,6 +17,7 @@ library(purrr)
 library(RPostgreSQL)
 library(DBI)
 
+pdf(NULL)
 course_list <- jsonlite::fromJSON("settings/course_list.json")
 
 # Shiny server
